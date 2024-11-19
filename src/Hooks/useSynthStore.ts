@@ -10,6 +10,7 @@ type Voice = {
   modGain: GainNode,
   carOsc: OscillatorNode,
   carDepth: GainNode,
+  offset: ConstantSourceNode,
   carGain: GainNode,
 }
 
@@ -25,6 +26,7 @@ interface SynthState {
   masterVolume: number,
   modRatio: number,
   modOffset: number,
+  setMode: (mode: SynthMode) => void,
   setMaxVoices: (maxVoices: number) => void,
   setMasterVolume: (masterVolume: number) => void,
   setModRatio: (modRatio: number) => void,
@@ -34,11 +36,12 @@ interface SynthState {
   noteOff: (note: number) => void,
 }
 
-function createVoice(note: number, audioCtx: AudioContext, dest?: AudioNode): Voice {
+function createVoice(note: number, mode: SynthMode, audioCtx: AudioContext, dest?: AudioNode): Voice {
   const modOsc = audioCtx.createOscillator()
   const modDepth = audioCtx.createGain()
   const modGain = audioCtx.createGain()
   const carOsc = audioCtx.createOscillator()
+  const offset = audioCtx.createConstantSource()
   const carDepth = audioCtx.createGain()
   const carGain = audioCtx.createGain()
 
@@ -47,9 +50,17 @@ function createVoice(note: number, audioCtx: AudioContext, dest?: AudioNode): Vo
   modOsc.connect(modDepth)
   modDepth.connect(modGain)
 
-  modGain.connect(carOsc.frequency)
+  if (mode === 'FM') {
+    modGain.connect(carOsc.frequency)
+  } else {
+    modGain.connect(carDepth.gain)
+    offset.offset.setValueAtTime(-1, now)
+  }
+
   carOsc.connect(carDepth)
   carDepth.connect(carGain)
+  offset.connect(modGain)
+  offset.start()
   carGain.connect(dest ?? audioCtx.destination)
 
   carOsc.start()
@@ -65,6 +76,7 @@ function createVoice(note: number, audioCtx: AudioContext, dest?: AudioNode): Vo
     modDepth,
     modGain,
     carOsc,
+    offset,
     carDepth,
     carGain,
   }
@@ -73,10 +85,12 @@ function createVoice(note: number, audioCtx: AudioContext, dest?: AudioNode): Vo
 function killVoice(voice: Voice) {
   voice.modOsc.stop()
   voice.carOsc.stop()
+  voice.offset.stop()
   voice.modOsc.disconnect()
   voice.modDepth.disconnect()
   voice.modGain.disconnect()
   voice.carOsc.disconnect()
+  voice.offset.disconnect()
   voice.carDepth.disconnect()
   voice.carGain.disconnect()
 }
@@ -110,9 +124,23 @@ const useSynthStore = create<SynthState>((set, get) => ({
     set({ noteVoiceMap: {}, analyzer, masterGain, voices: [] })
   },
   noteOn: (note: number) => {
+    const mode = get().mode
     const now = get().audioCtx.currentTime
     const noteHz = midiToHz(note)
-    const voice = createVoice(note, get().audioCtx, get().analyzer)
+    const voice = createVoice(note, mode, get().audioCtx, get().analyzer)
+    const outputFrequency = noteHz * get().modRatio + get().modOffset
+
+    voice.carOsc.frequency.setValueAtTime(noteHz, now)
+    voice.modOsc.frequency.setValueAtTime(outputFrequency, now)
+    if (mode === 'FM') {
+      voice.modGain.gain.setValueAtTime(13 * outputFrequency, now)
+    } else {
+      voice.modGain.gain.setValueAtTime(1, now)
+      voice.carDepth.gain.setValueAtTime(1, now)
+    }
+
+    voice.carGain.gain.setTargetAtTime(1, now, 0.1)
+    
     const allVoices = [...get().voices, voice]
     const maxVoices = get().maxVoices
     const voices = allVoices.slice(Math.max(0, allVoices.length - maxVoices))
@@ -128,14 +156,6 @@ const useSynthStore = create<SynthState>((set, get) => ({
     noteVoiceMap[note] ??= new Set()
     noteVoiceMap[note].add(voice)
 
-    const outputFrequency = noteHz * get().modRatio + get().modOffset
-
-    voice.carOsc.frequency.setValueAtTime(noteHz, now)
-    voice.modOsc.frequency.setValueAtTime(outputFrequency, now)
-    voice.modGain.gain.setValueAtTime(13 * outputFrequency, now)
-
-    voice.carGain.gain.setTargetAtTime(1, now, 0.1)
-
     set({ voices })
   },
   noteOff: (note: number) => {
@@ -149,6 +169,9 @@ const useSynthStore = create<SynthState>((set, get) => ({
     })
 
     noteSet.clear()
+  },
+  setMode: (mode: SynthMode) => {
+    set({ mode })
   },
   setModRatio: (modRatio: number) => {
     set({ modRatio })

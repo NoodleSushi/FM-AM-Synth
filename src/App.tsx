@@ -11,6 +11,7 @@ function App() {
   const noteOn = useSynthStore((state) => state.noteOn)
   const noteOff = useSynthStore((state) => state.noteOff)
   const [masterVolume, setMasterVolume] = [useSynthStore((state) => state.masterVolume), useSynthStore((state) => state.setMasterVolume)]
+  const [mode, setMode] = [useSynthStore((state) => state.mode), useSynthStore((state) => state.setMode)]
   const [modRatio, setModRatio] = [useSynthStore((state) => state.modRatio), useSynthStore((state) => state.setModRatio)]
   const [modOffset, setModOffset] = [useSynthStore((state) => state.modOffset), useSynthStore((state) => state.setModOffset)]
   const [maxVoicse, setMaxVoices] = [useSynthStore((state) => state.maxVoices), useSynthStore((state) => state.setMaxVoices)]
@@ -42,6 +43,16 @@ function App() {
           value={masterVolume}
           onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
         />
+      </div>
+      <div>
+        <label>Mode</label>
+        <select
+          value={mode}
+          onChange={(e) => setMode(e.target.value as any)}
+        >
+          <option value='FM'>FM</option>
+          <option value='AM'>AM</option>
+        </select>
       </div>
       <div>
         <label>Modulator Ratio</label>
