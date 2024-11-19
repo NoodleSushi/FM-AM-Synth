@@ -10,7 +10,7 @@ type Voice = {
   modGain: GainNode,
   carOsc: OscillatorNode,
   carDepth: GainNode,
-  offset: ConstantSourceNode,
+  DCOffset: ConstantSourceNode,
   carGain: GainNode,
 }
 
@@ -41,7 +41,7 @@ function createVoice(note: number, mode: SynthMode, audioCtx: AudioContext, dest
   const modDepth = audioCtx.createGain()
   const modGain = audioCtx.createGain()
   const carOsc = audioCtx.createOscillator()
-  const offset = audioCtx.createConstantSource()
+  const DCOffset = audioCtx.createConstantSource()
   const carDepth = audioCtx.createGain()
   const carGain = audioCtx.createGain()
 
@@ -54,13 +54,13 @@ function createVoice(note: number, mode: SynthMode, audioCtx: AudioContext, dest
     modGain.connect(carOsc.frequency)
   } else {
     modGain.connect(carDepth.gain)
-    offset.offset.setValueAtTime(-1, now)
+    DCOffset.offset.setValueAtTime(-1, now)
   }
 
   carOsc.connect(carDepth)
   carDepth.connect(carGain)
-  offset.connect(modGain)
-  offset.start()
+  DCOffset.connect(modGain)
+  DCOffset.start()
   carGain.connect(dest ?? audioCtx.destination)
 
   carOsc.start()
@@ -76,7 +76,7 @@ function createVoice(note: number, mode: SynthMode, audioCtx: AudioContext, dest
     modDepth,
     modGain,
     carOsc,
-    offset,
+    DCOffset,
     carDepth,
     carGain,
   }
@@ -85,12 +85,12 @@ function createVoice(note: number, mode: SynthMode, audioCtx: AudioContext, dest
 function killVoice(voice: Voice) {
   voice.modOsc.stop()
   voice.carOsc.stop()
-  voice.offset.stop()
+  voice.DCOffset.stop()
   voice.modOsc.disconnect()
   voice.modDepth.disconnect()
   voice.modGain.disconnect()
   voice.carOsc.disconnect()
-  voice.offset.disconnect()
+  voice.DCOffset.disconnect()
   voice.carDepth.disconnect()
   voice.carGain.disconnect()
 }
