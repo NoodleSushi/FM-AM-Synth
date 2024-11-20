@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Piano from './Components/Piano'
 import useSynthStore from './Hooks/useSynthStore'
 import useKeyboardMapping from './Hooks/useKeyboardMapping'
+import useMidi from './Hooks/useMidi'
 import Oscilloscope from './Components/Oscilloscope'
 
 
@@ -25,6 +26,11 @@ function App() {
   useKeyboardMapping(
     (note) => noteOn(octave * 12 + note),
     (note) => noteOff(octave * 12 + note),
+  )
+
+  useMidi(
+    (note) => noteOn(note),
+    (note) => noteOff(note),
   )
 
   return (
