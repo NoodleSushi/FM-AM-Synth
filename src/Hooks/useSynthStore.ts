@@ -7,29 +7,35 @@ type Voice = {
   note: number
   modOsc: OscillatorNode,
   modDepth: GainNode,
-  modGain: GainNode,
+  modEnv: GainNode,
+  modLevel: GainNode,
+  DCOffset: ConstantSourceNode,
+  modOut: GainNode,
   carOsc: OscillatorNode,
   carDepth: GainNode,
-  DCOffset: ConstantSourceNode,
-  carGain: GainNode,
+  carEnv: GainNode,
 }
 
 interface SynthState {
   audioCtx: AudioContext,
   voices: Voice[],
+  started: boolean,
   noteVoiceMap: Record<number, Set<Voice>>,
   pressedNotes: Set<number>,
+  modLevelConstSource: ConstantSourceNode,
   modFreqConstSource: ConstantSourceNode,
   analyzer: AnalyserNode,
   masterGain: GainNode,
   mode: SynthMode,
   maxVoices: number,
   masterVolume: number,
+  modLevel: number,
   modRatio: number,
   modOffset: number,
   setMode: (mode: SynthMode) => void,
   setMaxVoices: (maxVoices: number) => void,
   setMasterVolume: (masterVolume: number) => void,
+  setModLevel: (modLevel: number) => void,
   setModRatio: (modRatio: number) => void,
   setModOffset: (modOffset: number) => void,
   init: () => void,
@@ -37,80 +43,98 @@ interface SynthState {
   noteOff: (note: number) => void,
 }
 
-function createVoice(note: number, mode: SynthMode, audioCtx: AudioContext, dest?: AudioNode): Voice {
+function createVoice(note: number, mode: SynthMode, audioCtx: AudioContext, modLevelConstSource: ConstantSourceNode, dest?: AudioNode): Voice {
   const modOsc = audioCtx.createOscillator()
   const modDepth = audioCtx.createGain()
-  const modGain = audioCtx.createGain()
-  const carOsc = audioCtx.createOscillator()
+  const modEnv = new GainNode(audioCtx, { gain: 0 })
+  const modLevel = new GainNode(audioCtx, { gain: 0 })
   const DCOffset = audioCtx.createConstantSource()
+  const modOut = audioCtx.createGain()
+  const carOsc = audioCtx.createOscillator()
   const carDepth = audioCtx.createGain()
-  const carGain = audioCtx.createGain()
+  const carEnv = new GainNode(audioCtx, { gain: 0 })
 
   const now = audioCtx.currentTime
 
   modOsc.connect(modDepth)
-  modDepth.connect(modGain)
+  modDepth.connect(modEnv)
+  modEnv.connect(modLevel)
+  modLevelConstSource.connect(modLevel.gain)
+  modLevel.connect(modOut)
 
   if (mode === 'FM') {
-    modGain.connect(carOsc.frequency)
+    modOut.connect(carOsc.frequency)
   } else {
-    modGain.connect(carDepth.gain)
+    modOut.connect(carDepth.gain)
     DCOffset.offset.setValueAtTime(-1, now)
   }
 
   carOsc.connect(carDepth)
-  carDepth.connect(carGain)
-  DCOffset.connect(modGain)
+  carDepth.connect(carEnv)
+  DCOffset.connect(modOut)
   DCOffset.start()
-  carGain.connect(dest ?? audioCtx.destination)
+  carEnv.connect(dest ?? audioCtx.destination)
 
   carOsc.start()
   modOsc.start()
-
-  modDepth.gain.setValueAtTime(1, now)
-  carDepth.gain.setValueAtTime(1, now)
-  carGain.gain.setValueAtTime(0, now)
 
   return {
     note,
     modOsc,
     modDepth,
-    modGain,
-    carOsc,
+    modEnv,
+    modLevel,
     DCOffset,
+    modOut,
+    carOsc,
     carDepth,
-    carGain,
+    carEnv,
   }
 }
 
 function killVoice(voice: Voice) {
-  voice.modOsc.stop()
-  voice.carOsc.stop()
-  voice.DCOffset.stop()
   voice.modOsc.disconnect()
+  voice.modOsc.stop()
   voice.modDepth.disconnect()
-  voice.modGain.disconnect()
-  voice.carOsc.disconnect()
+  voice.modEnv.disconnect()
+  voice.modLevel.disconnect()
   voice.DCOffset.disconnect()
+  voice.DCOffset.stop()
+  voice.modOut.disconnect()
+  voice.carOsc.disconnect()
+  voice.carOsc.stop()
   voice.carDepth.disconnect()
-  voice.carGain.disconnect()
+  voice.carEnv.disconnect()
 }
 
 const useSynthStore = create<SynthState>((set, get) => ({
   audioCtx: new window.AudioContext(),
+  modLevelConstSource: null as unknown as ConstantSourceNode,
   modFreqConstSource: null as unknown as ConstantSourceNode,
   analyzer: null as unknown as AnalyserNode,
   masterGain: null as unknown as GainNode,
   voices: [],
+  started: false,
   pressedNotes: new Set(),
   noteVoiceMap: {},
   mode: 'FM',
   maxVoices: 4,
+  modLevel: 1,
   modRatio: 1,
   modOffset: 0,
   masterVolume: 0.2,
   init: () => {
     const audioCtx = get().audioCtx
+    let started = get().started
+    const modLevelConstSource = get().modLevelConstSource ?? new ConstantSourceNode(audioCtx, {
+      offset: get().modLevel,
+    })
+
+    if (!started && audioCtx.state === 'running') {
+      modLevelConstSource.start()
+      started = true
+    }
+
     const analyzer = get().analyzer ?? audioCtx.createAnalyser()
     const masterGain = get().masterGain ?? audioCtx.createGain()
 
@@ -123,25 +147,23 @@ const useSynthStore = create<SynthState>((set, get) => ({
 
     masterGain.gain.setValueAtTime(get().masterVolume, audioCtx.currentTime)
 
-    set({ noteVoiceMap: {}, analyzer, masterGain, voices: [] })
+    set({ started, noteVoiceMap: {}, modLevelConstSource, analyzer, masterGain, voices: [] })
   },
   noteOn: (note: number) => {
     const mode = get().mode
     const now = get().audioCtx.currentTime
     const noteHz = midiToHz(note)
-    const voice = createVoice(note, mode, get().audioCtx, get().analyzer)
+    const voice = createVoice(note, mode, get().audioCtx, get().modLevelConstSource, get().analyzer)
     const outputFrequency = noteHz * get().modRatio + get().modOffset
 
     voice.carOsc.frequency.setValueAtTime(noteHz, now)
     voice.modOsc.frequency.setValueAtTime(outputFrequency, now)
     if (mode === 'FM') {
-      voice.modGain.gain.setValueAtTime(13 * outputFrequency, now)
-    } else {
-      voice.modGain.gain.setValueAtTime(1, now)
-      voice.carDepth.gain.setValueAtTime(1, now)
+      voice.modDepth.gain.setValueAtTime(13 * outputFrequency, now)
     }
 
-    voice.carGain.gain.setTargetAtTime(1, now, 0.1)
+    voice.modEnv.gain.setValueAtTime(1, now)
+    voice.carEnv.gain.setValueAtTime(1, now)
     
     const allVoices = [...get().voices, voice]
     const maxVoices = get().maxVoices
@@ -172,7 +194,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
     if (!noteSet) return
     
     noteSet.forEach((voice) => {
-      voice.carGain.gain.setTargetAtTime(0, now, 0.25)
+      voice.carEnv.gain.setValueAtTime(0, now)
     })
 
     noteSet.clear()
@@ -182,6 +204,10 @@ const useSynthStore = create<SynthState>((set, get) => ({
   },
   setMode: (mode: SynthMode) => {
     set({ mode })
+  },
+  setModLevel: (modLevel: number) => {
+    set({ modLevel })
+    get().modLevelConstSource.offset.setValueAtTime(modLevel, get().audioCtx.currentTime)
   },
   setModRatio: (modRatio: number) => {
     set({ modRatio })

@@ -13,6 +13,7 @@ function App() {
   const noteOff = useSynthStore((state) => state.noteOff)
   const [masterVolume, setMasterVolume] = [useSynthStore((state) => state.masterVolume), useSynthStore((state) => state.setMasterVolume)]
   const [mode, setMode] = [useSynthStore((state) => state.mode), useSynthStore((state) => state.setMode)]
+  const [modLevel, setModLevel] = [useSynthStore((state) => state.modLevel), useSynthStore((state) => state.setModLevel)]
   const [modRatio, setModRatio] = [useSynthStore((state) => state.modRatio), useSynthStore((state) => state.setModRatio)]
   const [modOffset, setModOffset] = [useSynthStore((state) => state.modOffset), useSynthStore((state) => state.setModOffset)]
   const [maxVoicse, setMaxVoices] = [useSynthStore((state) => state.maxVoices), useSynthStore((state) => state.setMaxVoices)]
@@ -61,6 +62,19 @@ function App() {
           <option value='FM'>FM</option>
           <option value='AM'>AM</option>
         </select>
+      </div>
+      <div>
+        <label>Modulator Level</label>
+        <input
+          type='range' min={0} max={1} step={0.0001}
+          value={modLevel}
+          onChange={(e) => setModLevel(parseFloat(e.target.value))}
+        />
+        <input
+          type='number' min={0} max={1}
+          value={modLevel}
+          onChange={(e) => setModLevel(parseFloat(e.target.value))}
+        />
       </div>
       <div>
         <label>Modulator Ratio</label>
@@ -116,7 +130,7 @@ function App() {
         />
       </div>
       <div>
-        <button onClick={initSynth}>Kill Synth</button>
+        <button onClick={initSynth} className='outline outline-1'>Kill Synth</button>
       </div>
       <Piano
         octave={octave}
