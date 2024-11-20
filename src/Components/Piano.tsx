@@ -7,8 +7,6 @@ import { twMerge } from 'tailwind-merge'
   0b10 2 - black key nudged left
   0b11 3 - black key nudged right
 */
-// const PIANO_LAYOUT = [0, 2, 0, 3, 0, 0, 2, 0, 1, 0, 3, 0]
-// const PIANO_KEY_COUNT = PIANO_LAYOUT.length
 
 type PianoProps = {
   octave?: number
@@ -18,6 +16,7 @@ type PianoProps = {
   blackKeyClassName: string
   onNoteDown?: (note: number) => void
   onNoteUp?: (note: number) => void
+  pressedNotes?: Set<number>
 } & React.HTMLAttributes<HTMLDivElement>
 
 function Piano({
@@ -28,6 +27,7 @@ function Piano({
   blackKeyClassName,
   onNoteDown,
   onNoteUp,
+  pressedNotes,
   ...props
 }: PianoProps) {
   const BLACK_KEY_NUDGES = [2, 3, 0, 2, 1, 3, 0]
@@ -45,6 +45,7 @@ function Piano({
           return (
             <div
               key={i}
+              data-pressed={pressedNotes?.has(note) ? true : undefined}
               className={twMerge("absolute h-full", whiteKeyClassName)}
               style={{
                 left: `${width * i}%`,
@@ -77,6 +78,7 @@ function Piano({
             return (
               <div
                 key={i}
+                data-pressed={pressedNotes?.has(note) ? true : undefined}
                 className={twMerge("absolute", blackKeyClassName)}
                 style={{
                   left: `${center - width / 2 + nudge}%`,

@@ -17,6 +17,8 @@ function App() {
   const [modOffset, setModOffset] = [useSynthStore((state) => state.modOffset), useSynthStore((state) => state.setModOffset)]
   const [maxVoicse, setMaxVoices] = [useSynthStore((state) => state.maxVoices), useSynthStore((state) => state.setMaxVoices)]
   const analyzer = useSynthStore((state) => state.analyzer)
+  const pressedNotes = useSynthStore((state) => state.pressedNotes)
+
   const [octave, setOctave] = useState(4)
 
   useEffect(() => {
@@ -121,10 +123,11 @@ function App() {
         octaves={4}
         blackKeyRatio={0.6}
         className='w-[64rem] h-[8rem]'
-        whiteKeyClassName='bg-white outline outline-1'
-        blackKeyClassName='bg-black outline outline-1'
+        whiteKeyClassName='bg-white outline outline-1 data-[pressed=true]:bg-red-500'
+        blackKeyClassName='bg-black outline outline-1 data-[pressed=true]:bg-red-500'
         onNoteDown={(note) => noteOn(note)}
         onNoteUp={(note) => noteOff(note)}
+        pressedNotes={pressedNotes}
       />
       <Oscilloscope
         analyzer={analyzer}
