@@ -117,7 +117,7 @@ function App() {
         <button onClick={initSynth}>Kill Synth</button>
       </div>
       <Piano
-        octave={2}
+        octave={octave}
         octaves={4}
         blackKeyRatio={0.6}
         className='w-[64rem] h-[8rem]'
