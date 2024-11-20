@@ -18,6 +18,7 @@ interface SynthState {
   audioCtx: AudioContext,
   voices: Voice[],
   noteVoiceMap: Record<number, Set<Voice>>,
+  pressedNotes: Set<number>,
   modFreqConstSource: ConstantSourceNode,
   analyzer: AnalyserNode,
   masterGain: GainNode,
@@ -101,6 +102,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
   analyzer: null as unknown as AnalyserNode,
   masterGain: null as unknown as GainNode,
   voices: [],
+  pressedNotes: new Set(),
   noteVoiceMap: {},
   mode: 'FM',
   maxVoices: 4,
@@ -147,16 +149,21 @@ const useSynthStore = create<SynthState>((set, get) => ({
     const voicesToKill = allVoices.slice(0, allVoices.length - maxVoices)
 
     const noteVoiceMap = get().noteVoiceMap
+    const pressedNotes = get().pressedNotes
 
     voicesToKill.forEach((voice) => {
       killVoice(voice)
       noteVoiceMap[voice.note]?.delete(voice)
+      if (noteVoiceMap[voice.note]?.size === 0 || false) {
+        pressedNotes.delete(voice.note)
+      }
     })
 
     noteVoiceMap[note] ??= new Set()
     noteVoiceMap[note].add(voice)
+    pressedNotes.add(note)
 
-    set({ voices })
+    set({ voices, pressedNotes: new Set(pressedNotes) })
   },
   noteOff: (note: number) => {
     const now = get().audioCtx.currentTime
@@ -169,6 +176,9 @@ const useSynthStore = create<SynthState>((set, get) => ({
     })
 
     noteSet.clear()
+    const pressedNotes = get().pressedNotes
+    pressedNotes.delete(note)
+    set({ pressedNotes: new Set(pressedNotes) })
   },
   setMode: (mode: SynthMode) => {
     set({ mode })
