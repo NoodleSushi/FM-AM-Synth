@@ -268,10 +268,8 @@ const useSynthStore = create<SynthState>((set, get) => ({
     get().masterGain.gain.setValueAtTime(volume, get().audioCtx.currentTime)
   },
   setMaxVoices: (maxVoices: number) => {
-    maxVoices = Math.min(Math.max(1, maxVoices), 8)
-    set({ maxVoices })
     get().voices.forEach(killVoice)
-    set({ voices: [], noteVoiceMap: {} })
+    set({ maxVoices: Math.min(Math.max(1, maxVoices), 8), voices: [], noteVoiceMap: {} })
   },
 }))
 
