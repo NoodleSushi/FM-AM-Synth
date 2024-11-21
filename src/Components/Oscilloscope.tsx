@@ -35,7 +35,7 @@ function Oscilloscope({ analyzer, ...props }: OscilloscopeProps) {
 
     for (let i = 0; i < bufferLength; i++) {
       const v = dataArray[i] / 128.0;
-      const y = v * (height / 2);
+      const y = height - v * (height / 2);
     
       if (i === 0) {
         ctx.moveTo(x, y);
