@@ -5,7 +5,7 @@ import useSynthStore from './Hooks/useSynthStore'
 import useKeyboardMapping from './Hooks/useKeyboardMapping'
 import useMidi from './Hooks/useMidi'
 import Oscilloscope from './Components/Oscilloscope'
-import { mobileAndTabletCheck } from './utils'
+import useIsMobile from './Hooks/useIsMobile'
 
 
 function App() {
@@ -21,6 +21,7 @@ function App() {
   const [maxVoicse, setMaxVoices] = [useSynthStore((state) => state.maxVoices), useSynthStore((state) => state.setMaxVoices)]
   const analyzer = useSynthStore((state) => state.analyzer)
   const pressedNotes = useSynthStore((state) => state.pressedNotes)
+  const isMobile = useIsMobile()
 
   const [octave, setOctave] = useState(4)
 
@@ -150,7 +151,7 @@ function App() {
           className='fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 select-none text-8xl w-full h-full'
           onClick={initSynth}
         >
-          {mobileAndTabletCheck() && 'Touch' || 'Click'} to Start
+          {isMobile && 'Touch' || 'Click'} to Start
         </div>
       )}
     </>
