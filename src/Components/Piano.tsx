@@ -57,7 +57,7 @@ function Piano({
               onMouseUp={() => onNoteUp?.(note)}
               onTouchEnd={() => onNoteUp?.(note)}
             >
-              {isC && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2">
+              {isC && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 select-none">
                 C{octave + relOctave}
               </div>}
             </div>
