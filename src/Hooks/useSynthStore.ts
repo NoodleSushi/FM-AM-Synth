@@ -127,7 +127,7 @@ function killVoice(voice: Voice) {
 }
 
 const useSynthStore = create<SynthState>((set, get) => ({
-  audioCtx: new window.AudioContext(),
+  audioCtx: null as unknown as AudioContext,
   modRatioConstSource: null as unknown as ConstantSourceNode,
   modOffsetConstSource: null as unknown as ConstantSourceNode,
   modLevelConstSource: null as unknown as ConstantSourceNode,
@@ -144,8 +144,8 @@ const useSynthStore = create<SynthState>((set, get) => ({
   modRatio: 1,
   modOffset: 0,
   masterVolume: 0.2,
-  init: () => {
-    const audioCtx = get().audioCtx
+  init: async () => {
+    const audioCtx = get().audioCtx ?? new window.AudioContext({sampleRate: 44100})
     let started = get().started
     const modRatioConstSource = get().modRatioConstSource ?? new ConstantSourceNode(audioCtx, {
       offset: get().modRatio,
@@ -160,28 +160,31 @@ const useSynthStore = create<SynthState>((set, get) => ({
       offset: -1,
     })
 
+    const analyzer = get().analyzer ?? audioCtx.createAnalyser()
+    const masterGain = get().masterGain ?? audioCtx.createGain()
+
+    if (audioCtx.state === 'suspended') {
+      await audioCtx.resume()
+    }
+
     if (!started && audioCtx.state === 'running') {
       modRatioConstSource.start()
       modOffsetConstSource.start()
       modLevelConstSource.start()
       DCOffsetConstSource.start()
+
+      analyzer.connect(masterGain)
+      masterGain.connect(audioCtx.destination)
+
+      masterGain.gain.setValueAtTime(get().masterVolume, audioCtx.currentTime)
+
       started = true
     }
 
-    const analyzer = get().analyzer ?? audioCtx.createAnalyser()
-    const masterGain = get().masterGain ?? audioCtx.createGain()
-
     get().voices.forEach(killVoice)
 
-    analyzer.disconnect()
-    analyzer.connect(masterGain)
-    masterGain.disconnect()
-    masterGain.connect(audioCtx.destination)
-
-    masterGain.gain.setValueAtTime(get().masterVolume, audioCtx.currentTime)
-
     set({
-      started,
+      audioCtx,
       noteVoiceMap: {},
       modRatioConstSource,
       modOffsetConstSource,
@@ -190,6 +193,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
       analyzer,
       masterGain,
       voices: [],
+      started,
     })
   },
   noteOn: (note: number) => {

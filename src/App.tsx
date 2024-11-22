@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 import Piano from './Components/Piano'
 import useSynthStore from './Hooks/useSynthStore'
 import useKeyboardMapping from './Hooks/useKeyboardMapping'
 import useMidi from './Hooks/useMidi'
 import Oscilloscope from './Components/Oscilloscope'
+import { mobileAndTabletCheck } from './utils'
 
 
 function App() {
   const initSynth = useSynthStore((state) => state.init)
+  const audioCtxState = useSynthStore((state) => state.audioCtx?.state || '')
   const noteOn = useSynthStore((state) => state.noteOn)
   const noteOff = useSynthStore((state) => state.noteOff)
   const [masterVolume, setMasterVolume] = [useSynthStore((state) => state.masterVolume), useSynthStore((state) => state.setMasterVolume)]
@@ -21,10 +23,6 @@ function App() {
   const pressedNotes = useSynthStore((state) => state.pressedNotes)
 
   const [octave, setOctave] = useState(4)
-
-  useEffect(() => {
-    initSynth()
-  }, [])
 
   useKeyboardMapping(
     (note) => noteOn(octave * 12 + note),
@@ -147,6 +145,14 @@ function App() {
         analyzer={analyzer}
         className={`w-[32rem] h-[8rem] bg-slate-400`}
       />
+      {audioCtxState !== 'running' && (
+        <div
+          className='fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 select-none'
+          onClick={initSynth}
+        >
+          {mobileAndTabletCheck() && 'Touch' || 'Click'} to Start
+        </div>
+      )}
     </>
   )
 }
