@@ -274,7 +274,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
   },
   setMaxVoices: (maxVoices: number) => {
     get().voices.forEach(killVoice)
-    set({ maxVoices: Math.min(Math.max(1, maxVoices), 8), voices: [], noteVoiceMap: {} })
+    set({ maxVoices: Math.min(Math.max(1, maxVoices), 8), voices: [], noteVoiceMap: {}, pressedNotes: new Set() })
   },
 }))
 
