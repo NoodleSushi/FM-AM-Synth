@@ -18,7 +18,7 @@ function App() {
   const [modLevel, setModLevel] = [useSynthStore((state) => state.modLevel), useSynthStore((state) => state.setModLevel)]
   const [modRatio, setModRatio] = [useSynthStore((state) => state.modRatio), useSynthStore((state) => state.setModRatio)]
   const [modOffset, setModOffset] = [useSynthStore((state) => state.modOffset), useSynthStore((state) => state.setModOffset)]
-  const [maxVoicse, setMaxVoices] = [useSynthStore((state) => state.maxVoices), useSynthStore((state) => state.setMaxVoices)]
+  const [maxVoices, setMaxVoices] = [useSynthStore((state) => state.maxVoices), useSynthStore((state) => state.setMaxVoices)]
   const analyzer = useSynthStore((state) => state.analyzer)
   const pressedNotes = useSynthStore((state) => state.pressedNotes)
   const isMobile = useIsMobile()
@@ -106,12 +106,12 @@ function App() {
         <label>Max Voices</label>
         <input
           type='range' min={1} max={8} step={1}
-          value={maxVoicse}
+          value={maxVoices}
           onChange={(e) => setMaxVoices(parseInt(e.target.value))}
         />
         <input
           type='number' min={1} max={8}
-          value={maxVoicse}
+          value={maxVoices}
           onChange={(e) => setMaxVoices(parseInt(e.target.value))}
         />
       </div>
