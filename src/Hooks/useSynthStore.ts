@@ -193,6 +193,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
       analyzer,
       masterGain,
       voices: [],
+      pressedNotes: new Set(),
       started,
     })
   },
@@ -218,7 +219,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
     const allVoices = [...get().voices, voice]
     const maxVoices = get().maxVoices
     const voices = allVoices.slice(Math.max(0, allVoices.length - maxVoices))
-    const voicesToKill = allVoices.slice(0, allVoices.length - maxVoices)
+    const voicesToKill = (allVoices.length > maxVoices) ? allVoices.slice(0, allVoices.length - maxVoices) : []
 
     const noteVoiceMap = get().noteVoiceMap
     const pressedNotes = get().pressedNotes
