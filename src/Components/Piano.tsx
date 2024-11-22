@@ -33,6 +33,26 @@ function Piano({
   const BLACK_KEY_NUDGES = [2, 3, 0, 2, 1, 3, 0]
   const WHITE_NOTE_MAPPING = [0, 2, 4, 5, 7, 9, 11]
   const noteStart = octave * 12
+
+  const handleMouseDown = (note: number) => () => {
+    onNoteDown?.(note);
+    const handleMouseUp = () => {
+      onNoteUp?.(note);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("pointerout", handleMouseUp);
+    };
+    document.addEventListener("mouseup", handleMouseUp, { once: true });
+    document.addEventListener("pointerout", handleMouseUp, { once: true });
+  }
+
+  const handleMouseEnter = (note: number) => (e: React.MouseEvent) => {
+    if (e.buttons !== 1) return; // Only handle if a button is pressed
+    handleMouseDown(note)();
+  }
+
+  const handleTouchStart = (note: number) => () => onNoteDown?.(note);
+  const handleTouchEnd = (note: number) => () => onNoteUp?.(note);
+
   return (
     <div {...props}>
       <div className="relative w-full h-full">
@@ -52,10 +72,10 @@ function Piano({
                 right: `${100 - width * (i + 1)}%`,
                 zIndex: 0,
               }}
-              onMouseDown={() => onNoteDown?.(note)}
-              onTouchStart={() => onNoteDown?.(note)}
-              onMouseUp={() => onNoteUp?.(note)}
-              onTouchEnd={() => onNoteUp?.(note)}
+              onMouseDown={handleMouseDown(note)}
+              onMouseEnter={handleMouseEnter(note)}
+              onTouchStart={handleTouchStart(note)}
+              onTouchEnd={handleTouchEnd(note)}
             >
               {isC && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 select-none">
                 C{octave + relOctave}
@@ -87,10 +107,10 @@ function Piano({
                   bottom: `${100 - blackKeyRatio*100}%`,
                   zIndex: 1,
                 }}
-                onMouseDown={() => onNoteDown?.(note)}
-                onTouchStart={() => onNoteDown?.(note)}
-                onMouseUp={() => onNoteUp?.(note)}
-                onTouchEnd={() => onNoteUp?.(note)}
+                onMouseDown={handleMouseDown(note)}
+                onMouseEnter={handleMouseEnter(note)}
+                onTouchStart={handleTouchStart(note)}
+                onTouchEnd={handleTouchEnd(note)}
               />
             )
           })}
