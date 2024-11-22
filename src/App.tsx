@@ -147,7 +147,7 @@ function App() {
       />
       {audioCtxState !== 'running' && (
         <div
-          className='fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 select-none'
+          className='fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center z-50 select-none text-8xl w-full h-full'
           onClick={initSynth}
         >
           {mobileAndTabletCheck() && 'Touch' || 'Click'} to Start
