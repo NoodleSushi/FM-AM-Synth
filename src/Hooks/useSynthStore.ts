@@ -46,6 +46,7 @@ interface SynthState {
   init: () => void,
   noteOn: (note: number) => void,
   noteOff: (note: number) => void,
+  killAllVoices: () => void,
 }
 
 function createVoice(
@@ -181,19 +182,16 @@ const useSynthStore = create<SynthState>((set, get) => ({
       started = true
     }
 
-    get().voices.forEach(killVoice)
+    get().killAllVoices()
 
     set({
       audioCtx,
-      noteVoiceMap: {},
       modRatioConstSource,
       modOffsetConstSource,
       modLevelConstSource,
       DCOffsetConstSource,
       analyzer,
       masterGain,
-      voices: [],
-      pressedNotes: new Set(),
       started,
     })
   },
@@ -273,8 +271,12 @@ const useSynthStore = create<SynthState>((set, get) => ({
     get().masterGain.gain.setValueAtTime(volume, get().audioCtx.currentTime)
   },
   setMaxVoices: (maxVoices: number) => {
+    get().killAllVoices()
+    set({ maxVoices: Math.min(Math.max(1, maxVoices), 8) })
+  },
+  killAllVoices: () => {
     get().voices.forEach(killVoice)
-    set({ maxVoices: Math.min(Math.max(1, maxVoices), 8), voices: [], noteVoiceMap: {}, pressedNotes: new Set() })
+    set({ voices: [], noteVoiceMap: {}, pressedNotes: new Set() })
   },
 }))
 
