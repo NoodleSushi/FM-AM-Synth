@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input[type="number"] {
+  padding-inline: 8px;
+  padding-block: 4px;
+  border-radius: 8px;
+}
+
+input[type="number"]:focus {
+  outline: 2px solid rgb(255,173,187); /* Example color */
+  outline-offset: 2px; /* Optional: Adds space between the input and the outline */
+}
