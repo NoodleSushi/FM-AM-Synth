@@ -53,6 +53,7 @@ function ModulatorControls() {
         value={modRatio}
         onChange={(e) => setModRatio(parseFloat(e.target.value))}
       />
+      <span>x</span>
       <input
         type='number' min={0} max={64}
         value={modRatio}
