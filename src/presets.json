@@ -1,0 +1,68 @@
+{
+  "presets": [
+    {
+      "name": "Init",
+      "state": {
+        "volume": 1,
+        "mode": "FM",
+        "modLevel": 1,
+        "modRatio": 1,
+        "modOffset": 0,
+        "modWaveform": "sin",
+        "modWavePhase": 0,
+        "modWaveN": 512,
+        "carWaveform": "sin",
+        "carWavePhase": 0,
+        "carWaveN": 512
+      }
+    },
+    {
+      "name": "Glass Harp",
+      "state": {
+        "volume": 0.5,
+        "mode": "AM",
+        "modLevel": 1,
+        "modRatio": 0,
+        "modOffset": 0.5,
+        "modWaveform": "sin",
+        "modWavePhase": 0,
+        "modWaveN": 512,
+        "carWaveform": "sin",
+        "carWavePhase": 0,
+        "carWaveN": 512
+      }
+    },
+    {
+      "name": "Bubbles",
+      "state": {
+        "volume": 1,
+        "mode": "FM",
+        "modLevel": 1,
+        "modRatio": 0,
+        "modOffset": 11,
+        "modWaveform": "saw",
+        "modWavePhase": 0,
+        "modWaveN": 512,
+        "carWaveform": "sin",
+        "carWavePhase": 0,
+        "carWaveN": 512
+      }
+    },
+    {
+      "name": "C64 Lead",
+      "state": {
+        "volume": 1,
+        "mode": "AM",
+        "modLevel": 1,
+        "modRatio": 1,
+        "modOffset": 1,
+        "modWaveform": "sqr",
+        "modWavePhase": 1.57,
+        "modWaveN": 512,
+        "carWaveform": "sqr",
+        "carWavePhase": 0,
+        "carWaveN": 512
+      }
+    }
+  ]
+}

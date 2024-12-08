@@ -1,7 +1,8 @@
 import { create } from 'zustand'
-import { midiToHz } from '../utils'
+import { midiToHz, Waveform } from '../utils'
+import { createPeriodicWave } from '../utils'
 
-type SynthMode = 'FM' | 'AM'
+export type SynthMode = 'FM' | 'AM'
 
 type Voice = {
   note: number,
@@ -17,11 +18,13 @@ type Voice = {
   carOsc: OscillatorNode,
   carDepth: GainNode,
   carEnv: GainNode,
+  kill: () => void,
 }
 
 interface SynthState {
   audioCtx: AudioContext,
   voices: Voice[],
+  lastNoteHz: number,
   started: boolean,
   noteVoiceMap: Record<number, Set<Voice>>,
   pressedNotes: Set<number>,
@@ -30,19 +33,46 @@ interface SynthState {
   modLevelConstSource: ConstantSourceNode,
   DCOffsetConstSource: ConstantSourceNode,
   analyzer: AnalyserNode,
+  gain: GainNode,
   masterGain: GainNode,
   mode: SynthMode,
   maxVoices: number,
   masterVolume: number,
+  volume: number,
   modLevel: number,
   modRatio: number,
   modOffset: number,
+  modWaveform: Waveform,
+  modWavePhase: number,
+  modWaveN: number,
+  modPeriodicWave: PeriodicWave,
+  modComps: {
+    real: Float32Array,
+    imag: Float32Array,
+  }
+  carWaveform: Waveform,
+  carWavePhase: number,
+  carWaveN: number,
+  carPeriodicWave: PeriodicWave,
+  carComps: {
+    real: Float32Array,
+    imag: Float32Array,
+  }
   setMode: (mode: SynthMode) => void,
   setMaxVoices: (maxVoices: number) => void,
   setMasterVolume: (masterVolume: number) => void,
+  setVolume: (volume: number) => void,
   setModLevel: (modLevel: number) => void,
   setModRatio: (modRatio: number) => void,
   setModOffset: (modOffset: number) => void,
+  setModWaveform: (modWaveType: Waveform) => void,
+  setModWavePhase: (modWavePhase: number) => void,
+  setModWaveN: (modWaveN: number) => void,
+  updateModPeriodicWave: (ctx?: AudioContext) => void,
+  setCarWaveform: (carWaveType: Waveform) => void,
+  setCarWavePhase: (carWavePhase: number) => void,
+  setCarWaveN: (carWaveN: number) => void,
+  updateCarPeriodicWave: (ctx?: AudioContext) => void
   init: () => void,
   noteOn: (note: number) => void,
   noteOff: (note: number) => void,
@@ -53,6 +83,8 @@ function createVoice(
   note: number,
   mode: SynthMode,
   audioCtx: AudioContext,
+  modPeriodicWave: PeriodicWave,
+  carPeriodicWave: PeriodicWave,
   modRatioCS: ConstantSourceNode,
   modOffsetCS: ConstantSourceNode,
   modLevelCS: ConstantSourceNode,
@@ -80,6 +112,7 @@ function createVoice(
   modOffsetCS.connect(modFreq)
   modFreq.connect(modOsc.frequency)
 
+  modOsc.setPeriodicWave(modPeriodicWave)
   modOsc.connect(modDepth)
   modDepth.connect(modEnv)
   modEnv.connect(modLevel)
@@ -96,6 +129,7 @@ function createVoice(
     DCOffsetCS.connect(modOut)
   }
 
+  carOsc.setPeriodicWave(carPeriodicWave)
   carOsc.connect(carDepth)
   carDepth.connect(carEnv)
   carEnv.connect(dest ?? audioCtx.destination)
@@ -118,13 +152,17 @@ function createVoice(
     carOsc,
     carDepth,
     carEnv,
+    kill: () => {
+      noteFreq.stop()
+      modOsc.stop()
+      carOsc.stop()
+      modRatioCS.disconnect(noteRatio.gain)
+      modOffsetCS.disconnect(modFreq)
+      modLevelCS.disconnect(modLevel.gain)
+      if (mode === 'AM')
+        DCOffsetCS.disconnect(modOut)
+    }
   }
-}
-
-function killVoice(voice: Voice) {
-  voice.noteFreq.stop()
-  voice.modOsc.stop()
-  voice.carOsc.stop()
 }
 
 const useSynthStore = create<SynthState>((set, get) => ({
@@ -135,7 +173,9 @@ const useSynthStore = create<SynthState>((set, get) => ({
   DCOffsetConstSource: null as unknown as ConstantSourceNode,
   analyzer: null as unknown as AnalyserNode,
   masterGain: null as unknown as GainNode,
+  gain: null as unknown as GainNode,
   voices: [],
+  lastNoteHz: 440.0,
   started: false,
   pressedNotes: new Set(),
   noteVoiceMap: {},
@@ -144,6 +184,23 @@ const useSynthStore = create<SynthState>((set, get) => ({
   modLevel: 1,
   modRatio: 1,
   modOffset: 0,
+  modWaveform: 'sin',
+  modWavePhase: 0,
+  modWaveN: 512,
+  modPeriodicWave: null as unknown as PeriodicWave,
+  modComps: {
+    real: new Float32Array(512),
+    imag: new Float32Array(512),
+  },
+  carWaveform: 'sin',
+  carWavePhase: 0,
+  carWaveN: 512,
+  carPeriodicWave: null as unknown as PeriodicWave,
+  carComps: {
+    real: new Float32Array(512),
+    imag: new Float32Array(512),
+  },
+  volume: 1,
   masterVolume: 0.2,
   init: async () => {
     const audioCtx = get().audioCtx ?? new window.AudioContext({sampleRate: 44100})
@@ -161,6 +218,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
       offset: -1,
     })
 
+    const gain = get().gain ?? audioCtx.createGain()
     const analyzer = get().analyzer ?? audioCtx.createAnalyser()
     const masterGain = get().masterGain ?? audioCtx.createGain()
 
@@ -174,9 +232,14 @@ const useSynthStore = create<SynthState>((set, get) => ({
       modLevelConstSource.start()
       DCOffsetConstSource.start()
 
+      get().updateModPeriodicWave(audioCtx)
+      get().updateCarPeriodicWave(audioCtx)
+
+      gain.connect(analyzer)
       analyzer.connect(masterGain)
       masterGain.connect(audioCtx.destination)
 
+      gain.gain.setValueAtTime(get().volume, audioCtx.currentTime)
       masterGain.gain.setValueAtTime(get().masterVolume, audioCtx.currentTime)
 
       started = true
@@ -191,6 +254,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
       modLevelConstSource,
       DCOffsetConstSource,
       analyzer,
+      gain,
       masterGain,
       started,
     })
@@ -203,11 +267,13 @@ const useSynthStore = create<SynthState>((set, get) => ({
       note,
       mode,
       get().audioCtx,
+      get().modPeriodicWave,
+      get().carPeriodicWave,
       get().modRatioConstSource,
       get().modOffsetConstSource,
       get().modLevelConstSource,
       get().DCOffsetConstSource,
-      get().analyzer,
+      get().gain,
     )
     voice.carOsc.frequency.setValueAtTime(noteHz, now)
 
@@ -223,7 +289,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
     const pressedNotes = get().pressedNotes
 
     voicesToKill.forEach((voice) => {
-      killVoice(voice)
+      voice.kill()
       noteVoiceMap[voice.note]?.delete(voice)
       if (noteVoiceMap[voice.note]?.size === 0 || false) {
         pressedNotes.delete(voice.note)
@@ -234,7 +300,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
     noteVoiceMap[note].add(voice)
     pressedNotes.add(note)
 
-    set({ voices, pressedNotes: new Set(pressedNotes) })
+    set({ voices, lastNoteHz: noteHz, pressedNotes: new Set(pressedNotes) })
   },
   noteOff: (note: number) => {
     const now = get().audioCtx.currentTime
@@ -250,6 +316,44 @@ const useSynthStore = create<SynthState>((set, get) => ({
     const pressedNotes = get().pressedNotes
     pressedNotes.delete(note)
     set({ pressedNotes: new Set(pressedNotes) })
+  },
+  setModWaveform: (modWaveType: Waveform) => {
+    set({ modWaveform: modWaveType })
+    get().updateModPeriodicWave()
+  },
+  setModWavePhase: (modWavePhase: number) => {
+    set({ modWavePhase })
+    get().updateModPeriodicWave()
+  },
+  setModWaveN: (modWaveN: number) => {
+    set({ modWaveN })
+    get().updateModPeriodicWave()
+  },
+  updateModPeriodicWave: (ctx?: AudioContext) => {
+    const { periodicWave, real, imag } = createPeriodicWave(ctx ?? get().audioCtx, get().modWaveform, get().modWavePhase, get().modWaveN)
+    set({ modPeriodicWave: periodicWave, modComps: { real, imag } })
+    get().voices.forEach((voice) => {
+      voice.modOsc.setPeriodicWave(get().modPeriodicWave)
+    })
+  },
+  setCarWaveform: (carWaveType: Waveform) => {
+    set({ carWaveform: carWaveType })
+    get().updateCarPeriodicWave()
+  },
+  setCarWavePhase: (carWavePhase: number) => {
+    set({ carWavePhase })
+    get().updateCarPeriodicWave()
+  },
+  setCarWaveN: (carWaveN: number) => {
+    set({ carWaveN })
+    get().updateCarPeriodicWave()
+  },
+  updateCarPeriodicWave: (ctx?: AudioContext) => {
+    const { periodicWave, real, imag } = createPeriodicWave(ctx ?? get().audioCtx, get().carWaveform, get().carWavePhase, get().carWaveN)
+    set({ carPeriodicWave: periodicWave, carComps: { real, imag } })
+    get().voices.forEach((voice) => {
+      voice.carOsc.setPeriodicWave(get().carPeriodicWave)
+    })
   },
   setMode: (mode: SynthMode) => {
     set({ mode })
@@ -270,12 +374,16 @@ const useSynthStore = create<SynthState>((set, get) => ({
     set({ masterVolume: volume })
     get().masterGain.gain.setValueAtTime(volume, get().audioCtx.currentTime)
   },
+  setVolume: (volume: number) => {
+    set({ volume })
+    get().gain.gain.setValueAtTime(volume, get().audioCtx.currentTime)
+  },
   setMaxVoices: (maxVoices: number) => {
     get().killAllVoices()
     set({ maxVoices: Math.min(Math.max(1, maxVoices), 8) })
   },
   killAllVoices: () => {
-    get().voices.forEach(killVoice)
+    get().voices.forEach((voice) => voice.kill())
     set({ voices: [], noteVoiceMap: {}, pressedNotes: new Set() })
   },
 }))

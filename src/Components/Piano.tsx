@@ -1,4 +1,5 @@
 import * as _ from "lodash"
+import { useEffect, useRef, useState } from "react"
 import { twMerge } from 'tailwind-merge'
 
 /*
@@ -8,9 +9,12 @@ import { twMerge } from 'tailwind-merge'
   0b11 3 - black key nudged right
 */
 
+const BLACK_KEY_NUDGES = [2, 3, 0, 2, 1, 3, 0]
+const WHITE_NOTE_MAPPING = [0, 2, 4, 5, 7, 9, 11]
+
 type PianoProps = {
   octave?: number
-  octaves?: number
+  pxPerKey?: number
   blackKeyRatio?: number
   whiteKeyClassName: string
   blackKeyClassName: string
@@ -21,7 +25,7 @@ type PianoProps = {
 
 function Piano({
   octave = 4,
-  octaves = 7,
+  pxPerKey = 72,
   blackKeyRatio = 0.5,
   whiteKeyClassName,
   blackKeyClassName,
@@ -30,32 +34,49 @@ function Piano({
   pressedNotes,
   ...props
 }: PianoProps) {
-  const BLACK_KEY_NUDGES = [2, 3, 0, 2, 1, 3, 0]
-  const WHITE_NOTE_MAPPING = [0, 2, 4, 5, 7, 9, 11]
   const noteStart = octave * 12
 
-  const handleMouseDown = (note: number) => () => {
+  const handlePointerDown = (note: number) => (e: React.PointerEvent) => {
     onNoteDown?.(note);
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
       onNoteUp?.(note);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.removeEventListener("pointerout", handleMouseUp);
+      e.target.removeEventListener("pointerleave", handlePointerUp);
+      e.target.removeEventListener("pointerup", handlePointerUp);
     };
-    document.addEventListener("mouseup", handleMouseUp, { once: true });
-    document.addEventListener("pointerout", handleMouseUp, { once: true });
+    e.target.addEventListener("pointerleave", handlePointerUp, { once: true });
+    e.target.addEventListener("pointerup", handlePointerUp, { once: true });
   }
 
-  const handleMouseEnter = (note: number) => (e: React.MouseEvent) => {
-    if (e.buttons !== 1) return; // Only handle if a button is pressed
-    handleMouseDown(note)();
+  const handlePointerEnter = (note: number) => (e: React.PointerEvent) => {
+    if (e.buttons !== 1) return;
+    handlePointerDown(note)(e);
   }
 
-  const handleTouchStart = (note: number) => () => onNoteDown?.(note);
-  const handleTouchEnd = (note: number) => () => onNoteUp?.(note);
+  const [octaves, setOctaves] = useState(4)
+
+  const divRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!divRef.current) return;
+    const resizeObserver = new ResizeObserver(() => {
+      var rect = divRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setOctaves(Math.round(rect.width / (pxPerKey * 7)) || 1);
+    });
+
+    resizeObserver.observe(divRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [pxPerKey]);
 
   return (
     <div {...props}>
-      <div className="relative w-full h-full">
+      <div
+        className="relative w-full h-full"
+        ref={divRef}
+      >
         {/* Render White Keys */}
         {_.range(7 * octaves).map((i) => {
           const width = 100 / (7 * octaves)
@@ -66,16 +87,14 @@ function Piano({
             <div
               key={i}
               data-pressed={pressedNotes?.has(note) ? true : undefined}
-              className={twMerge("absolute h-full", whiteKeyClassName)}
+              className={twMerge("absolute h-full ", whiteKeyClassName)}
               style={{
                 left: `${width * i}%`,
                 right: `${100 - width * (i + 1)}%`,
                 zIndex: 0,
               }}
-              onMouseDown={handleMouseDown(note)}
-              onMouseEnter={handleMouseEnter(note)}
-              onTouchStart={handleTouchStart(note)}
-              onTouchEnd={handleTouchEnd(note)}
+              onPointerDown={handlePointerDown(note)}
+              onPointerEnter={handlePointerEnter(note)}
             >
               {isC && <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 select-none">
                 C{octave + relOctave}
@@ -107,10 +126,8 @@ function Piano({
                   bottom: `${100 - blackKeyRatio*100}%`,
                   zIndex: 1,
                 }}
-                onMouseDown={handleMouseDown(note)}
-                onMouseEnter={handleMouseEnter(note)}
-                onTouchStart={handleTouchStart(note)}
-                onTouchEnd={handleTouchEnd(note)}
+                onPointerDown={handlePointerDown(note)}
+                onPointerEnter={handlePointerEnter(note)}
               />
             )
           })}

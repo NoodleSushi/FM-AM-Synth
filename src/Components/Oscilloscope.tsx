@@ -1,10 +1,11 @@
 import { useEffect, useRef } from 'react'
 
 type OscilloscopeProps = {
-  analyzer?: AnalyserNode
+  alignHz?: number,
+  analyzer?: AnalyserNode,
 } & React.HTMLAttributes<HTMLDivElement>
 
-function Oscilloscope({ analyzer, ...props }: OscilloscopeProps) {
+function Oscilloscope({ analyzer, alignHz = 440, ...props }: OscilloscopeProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const requestRef = useRef<number | null>(null)
 
@@ -26,36 +27,40 @@ function Oscilloscope({ analyzer, ...props }: OscilloscopeProps) {
     const dataArray = new Uint8Array(bufferLength)
     analyzer.getByteTimeDomainData(dataArray)
 
-    ctx.lineWidth = 2
-    ctx.strokeStyle = 'rgb(0, 0, 0)'
-    ctx.beginPath()
-
     const sliceWidth = width / bufferLength;
-    let x = 0;
+    const sampleRate = analyzer.context.sampleRate
+    const sampleTime = analyzer.context.currentTime * sampleRate
+    const period = sampleRate / alignHz
+    const sampleOffset = (sampleTime % period)
+    let x = (-period + sampleOffset) * sliceWidth;
+    const offset = x % 1
+    x = Math.floor(x)
+
+    ctx.lineWidth = 2
+    ctx.strokeStyle = window.getComputedStyle(canvas).color
+    ctx.beginPath()
 
     for (let i = 0; i < bufferLength; i++) {
       const v = dataArray[i] / 128.0;
       const y = height - v * (height / 2);
     
       if (i === 0) {
-        ctx.moveTo(x, y);
+        ctx.moveTo(x + offset, y);
       } else {
-        ctx.lineTo(x, y);
+        ctx.lineTo(x + offset, y);
       }
     
       x += sliceWidth;
     }
 
-    ctx.lineTo(width, height / 2);
     ctx.stroke();
-    
     requestRef.current = requestAnimationFrame(animate)
   }
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(requestRef.current!)
-  }, [analyzer])
+  }, [analyzer, alignHz])
 
   return <div {...props}>
     <canvas className='w-full h-full' ref={canvasRef} />
