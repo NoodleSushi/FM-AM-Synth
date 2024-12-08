@@ -42,7 +42,7 @@ const KEY_MAPPINGS: { [key: string]: number } = {
 
 const useKeyboardMapping = (onNoteOn?: (note: number) => void, onNoteOff?: (note: number) => void) => useEffect(() => {
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+    if (e.target instanceof HTMLTextAreaElement) {
       return
     }
     const note = KEY_MAPPINGS[e.code]
@@ -53,7 +53,7 @@ const useKeyboardMapping = (onNoteOn?: (note: number) => void, onNoteOff?: (note
   }
 
   const handleKeyUp = (e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+    if (e.target instanceof HTMLTextAreaElement) {
       return
     }
     const note = KEY_MAPPINGS[e.code]
