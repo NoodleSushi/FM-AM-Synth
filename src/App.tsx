@@ -634,16 +634,18 @@ function PianoSection({ selectedTheme }: Props) {
   );
 
   return (
-    <Piano
-      octave={octave}
-      blackKeyRatio={0.6}
-      className="w-full h-[16rem]"
-      whiteKeyClassName={`bg-white outline outline-2 ${themes[selectedTheme].pressed.primary} cursor-pointer`}
-      blackKeyClassName={`bg-black outline outline-2 ${themes[selectedTheme].pressed.primary} cursor-pointer`}
-      onNoteDown={(note) => noteOn(note)}
-      onNoteUp={(note) => noteOff(note)}
-      pressedNotes={pressedNotes}
-    />
+    <div className="flex justify-center items-center h-[12rem]">
+      <Piano
+        octave={octave}
+        blackKeyRatio={0.6}
+        className="w-full h-[12rem]"
+        whiteKeyClassName={`bg-white outline outline-2 ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+        blackKeyClassName={`bg-black outline outline-2 ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+        onNoteDown={(note) => noteOn(note)}
+        onNoteUp={(note) => noteOff(note)}
+        pressedNotes={pressedNotes}
+      />
+    </div>
   );
 }
 
