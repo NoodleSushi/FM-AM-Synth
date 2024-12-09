@@ -649,7 +649,7 @@ function App() {
   const audioCtxState = useSynthStore((state) => state.audioCtx?.state || "");
   const isMobile = useIsMobile();
 
-  const [selectedTheme, setSelectedTheme] = useState<ThemeKeys>("pink");
+  const [selectedTheme] = useState<ThemeKeys>("pink");
 
   return (
     <>
