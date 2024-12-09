@@ -14,6 +14,7 @@ import { useState } from "react";
 import useMediaQuery from "./Hooks/useMediaQuery";
 import Select from "./Components/Select";
 import { MdKeyboardDoubleArrowDown, MdKeyboardDoubleArrowUp } from "react-icons/md";
+import { PiWaveSineBold } from "react-icons/pi";
 
 type Props = {
   selectedTheme: ThemeKeys;
@@ -465,8 +466,6 @@ function Controls({ selectedTheme }: Props) {
   const isMobile = useIsMobile();
   const isTabletScreens = useMediaQuery("(max-width: 1248px)");
 
-  const lastNoteHz = useSynthStore((state) => state.lastNoteHz);
-  const analyzer = useSynthStore((state) => state.analyzer);
   const initSynth = useSynthStore((state) => state.init);
   const [masterVolume, setMasterVolume] = [
     useSynthStore((state) => state.masterVolume),
@@ -478,7 +477,7 @@ function Controls({ selectedTheme }: Props) {
   ];
 
   return (
-    <div className="p-8 border-2 border-red-500 min-h-[1000px] flex flex-col gap-4">
+    <div className="p-8 border-2 border-red-500 flex flex-col gap-4">
       {/* PRESETS, MASTER VOLUME, & MODE */}
       <div
         className={`flex justify-between ${
@@ -548,26 +547,6 @@ function Controls({ selectedTheme }: Props) {
           Kill Synth
         </div>
       </div>
-
-      <div className="flex justify-between">
-        <div className="flex flex-col gap-2 items-center">
-          <Oscilloscope
-            analyzer={analyzer}
-            alignHz={lastNoteHz}
-            // className="w-[32rem]  bg-black text-[#00ff00]"
-            className={`w-[32rem] h-[8rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
-          />
-          <p>Oscilloscope</p>
-        </div>
-        <div className="flex flex-col gap-2 items-center">
-          <Spectrum
-            analyzer={analyzer}
-            // className="w-[32rem]  bg-black text-[#00ff00]"
-            className={`w-[32rem] h-[8rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
-          />
-          <p>Spectrum</p>
-        </div>
-      </div>
     </div>
   );
 }
@@ -632,6 +611,39 @@ function PianoSection({ selectedTheme }: Props) {
   </>;
 }
 
+function Header() {
+  const lastNoteHz = useSynthStore((state) => state.lastNoteHz);
+  const analyzer = useSynthStore((state) => state.analyzer);
+  const [selectedTheme] = useState<ThemeKeys>("pink");
+
+  return <nav
+    className={`border-2 border-blue-500 flex items-center justify-center ${themes[selectedTheme].bg.primary}`}
+  >
+    <div className="border-2 border-red-500 flex items-center gap-2">
+      <PiWaveSineBold size={40} className="-ml-[7.5px]" />
+      <h1 className="text-[2rem] font-[500]">FM-AM Synth</h1>
+    </div>
+    <div className="grow" />
+    <div className="flex justify-between">
+      <div className="flex flex-col gap-2 items-center">
+        <Oscilloscope
+          analyzer={analyzer}
+          alignHz={lastNoteHz}
+          // className="w-[32rem]  bg-black text-[#00ff00]"
+          className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
+        />
+      </div>
+      <div className="flex flex-col gap-2 items-center">
+        <Spectrum
+          analyzer={analyzer}
+          // className="w-[32rem]  bg-black text-[#00ff00]"
+          className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
+        />
+      </div>
+    </div>
+  </nav>
+}
+
 function App() {
   const initSynth = useSynthStore((state) => state.init);
   const audioCtxState = useSynthStore((state) => state.audioCtx?.state || "");
@@ -642,18 +654,7 @@ function App() {
   return (
     <>
       <div className="fixed flex flex-col w-full h-full font-poppins">
-        <nav
-          className={`border-2 border-blue-500 p-8 flex items-center justify-center ${themes[selectedTheme].bg.primary}`}
-        >
-          <div className="border-2 border-red-500 flex items-center gap-2">
-            {/* <div className="flex items-center">
-              <PiWaveSineBold size={40} className="-ml-[7.5px]" />
-            <PiWaveSineBold size={40} className="-ml-[7.5px]" />
-            <PiWaveSineBold size={40} className="-ml-[7.5px]" />
-            </div> */}
-            <h1 className="text-[2rem] font-[500]">Web Audio Synth</h1>
-          </div>
-        </nav>
+        <Header />
         <div
           className={`grow overflow-y-auto flex justify-center ${themes[selectedTheme].bg.secondary}`}
         >
