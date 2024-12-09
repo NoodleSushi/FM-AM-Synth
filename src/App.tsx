@@ -476,10 +476,6 @@ function Controls({ selectedTheme }: Props) {
     useSynthStore((state) => state.mode),
     useSynthStore((state) => state.setMode),
   ];
-  const [maxVoices, setMaxVoices] = [
-    useSynthStore((state) => state.maxVoices),
-    useSynthStore((state) => state.setMaxVoices),
-  ];
 
   return (
     <div className="p-8 border-2 border-red-500 min-h-[1000px] flex flex-col gap-4">
@@ -545,24 +541,6 @@ function Controls({ selectedTheme }: Props) {
 
       {/* MAX VOICES & OCTAVE */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-3 order-1">
-          <label>Max Voices</label>
-          <input
-            type="range"
-            min={1}
-            max={8}
-            step={1}
-            value={maxVoices}
-            onChange={(e) => setMaxVoices(parseInt(e.target.value))}
-          />
-          <input
-            type="number"
-            min={1}
-            max={8}
-            value={maxVoices}
-            onChange={(e) => setMaxVoices(parseInt(e.target.value))}
-          />
-        </div>
         <div
           onClick={initSynth}
           className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 mt-2 order-2 ${themes[selectedTheme].bg.primary}`}

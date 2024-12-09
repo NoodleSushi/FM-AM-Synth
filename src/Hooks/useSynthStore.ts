@@ -193,7 +193,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
   pressedNotes: new Set(),
   noteVoiceMap: {},
   mode: 'FM',
-  maxVoices: 4,
+  maxVoices: 8,
   modLevel: 1,
   modRatio: 1,
   modOffset: 0,
