@@ -47,6 +47,44 @@ function ModulatorControls() {
       />
     </div>
     <div>
+      <label>Modulator Waveform</label>
+      <select
+        value={modWaveform}
+        onChange={(e) => setModWaveform(e.target.value as any)}
+      >
+        {waveforms.map((waveform) => (
+          <option key={waveform.waveform} value={waveform.waveform}>{waveform.name}</option>
+        ))}
+      </select>
+    </div>
+    <div>
+      <label>Modulator Wave Phase</label>
+      <input
+        type='range' min={0} max={6.28} step={0.0001}
+        value={modWavePhase}
+        onChange={(e) => setModWavePhase(parseFloat(e.target.value))}
+      />
+      <input
+        type='number' min={0} max={6.28}
+        value={modWavePhase}
+        onChange={(e) => setModWavePhase(parseFloat(e.target.value))}
+      />
+      <span>rad</span>
+    </div>
+    <div>
+      <label>Modulator Partial Count</label>
+      <input
+        type='range' min={1} max={512} step={1}
+        value={modWaveN}
+        onChange={(e) => setModWaveN(parseInt(e.target.value))}
+      />
+      <input
+        type='number' min={1} max={512}
+        value={modWaveN}
+        onChange={(e) => setModWaveN(parseInt(e.target.value))}
+      />
+    </div>
+    <div>
       <label>Modulator Ratio</label>
       <input
         type='range' min={0} max={64} step={0.0001}
@@ -104,55 +142,33 @@ function ModulatorControls() {
         <span>Hz</span>
       </div>
     </>}
-    <div>
-      <label>Modulator Waveform</label>
-      <select
-        value={modWaveform}
-        onChange={(e) => setModWaveform(e.target.value as any)}
-      >
-        {waveforms.map((waveform) => (
-          <option key={waveform.waveform} value={waveform.waveform}>{waveform.name}</option>
-        ))}
-      </select>
+    <div className='px-1'>
+      <WaveLegend real={modComps.real} imag={modComps.imag} className='w-full h-[4rem] bg-black text-[#00ff00]' />
     </div>
-    <div>
-      <label>Modulator Wave Phase</label>
-      <input
-        type='range' min={0} max={6.28} step={0.0001}
-        value={modWavePhase}
-        onChange={(e) => setModWavePhase(parseFloat(e.target.value))}
-      />
-      <input
-        type='number' min={0} max={6.28}
-        value={modWavePhase}
-        onChange={(e) => setModWavePhase(parseFloat(e.target.value))}
-      />
-      <span>rad</span>
-    </div>
-    <div>
-      <label>Modulator Partial Count</label>
-      <input
-        type='range' min={1} max={512} step={1}
-        value={modWaveN}
-        onChange={(e) => setModWaveN(parseInt(e.target.value))}
-      />
-      <input
-        type='number' min={1} max={512}
-        value={modWaveN}
-        onChange={(e) => setModWaveN(parseInt(e.target.value))}
-      />
-    </div>
-    <WaveLegend real={modComps.real} imag={modComps.imag} className='w-[4rem] h-[4rem] bg-black text-[#00ff00]' />
   </div>
 }
 
 function CarrierControls() { 
+  const [volume, setVolume] = [useSynthStore((state) => state.volume), useSynthStore((state) => state.setVolume)]
   const [carWaveform, setCarWaveform] = [useSynthStore((state) => state.carWaveform), useSynthStore((state) => state.setCarWaveform)]
   const [carWavePhase, setCarWavePhase] = [useSynthStore((state) => state.carWavePhase), useSynthStore((state) => state.setCarWavePhase)]
   const [carWaveN, setCarWaveN] = [useSynthStore((state) => state.carWaveN), useSynthStore((state) => state.setCarWaveN)]
   const carComps = useSynthStore((state) => state.carComps)
 
-  return <div className="border border-black">
+  return <div className="border border-black flex flex-col">
+    <div>
+      <label>Carrier Volume</label>
+      <input
+        type='range' min={0} max={1} step={0.0001}
+        value={volume}
+        onChange={(e) => setVolume(parseFloat(e.target.value))}
+      />
+      <input
+        type='number' min={0} max={1}
+        value={volume}
+        onChange={(e) => setVolume(parseFloat(e.target.value))}
+      />
+    </div>
     <div>
       <label>Carrier Waveform</label>
       <select
@@ -191,7 +207,10 @@ function CarrierControls() {
         onChange={(e) => setCarWaveN(parseInt(e.target.value))}
       />
     </div>
-    <WaveLegend real={carComps.real} imag={carComps.imag} className='w-[4rem] h-[4rem] bg-black text-[#00ff00]' />
+    <div className='grow' />
+    <div className='px-1'>
+      <WaveLegend real={carComps.real} imag={carComps.imag} className='w-full h-[4rem] bg-black text-[#00ff00]' />
+    </div>
   </div>
 }
 
@@ -240,7 +259,6 @@ function Controls() {
   const analyzer = useSynthStore((state) => state.analyzer)
   const initSynth = useSynthStore((state) => state.init)
   const [masterVolume, setMasterVolume] = [useSynthStore((state) => state.masterVolume), useSynthStore((state) => state.setMasterVolume)]
-  const [volume, setVolume] = [useSynthStore((state) => state.volume), useSynthStore((state) => state.setVolume)]
   const [mode, setMode] = [useSynthStore((state) => state.mode), useSynthStore((state) => state.setMode)]
   const [maxVoices, setMaxVoices] = [useSynthStore((state) => state.maxVoices), useSynthStore((state) => state.setMaxVoices)]
   const [octave, setOctave] = [useAppStore((state) => state.octave), useAppStore((state) => state.setOctave)]
@@ -261,19 +279,6 @@ function Controls() {
       />
     </div>
     <div>
-      <label>Volume</label>
-      <input
-        type='range' min={0} max={1} step={0.0001}
-        value={volume}
-        onChange={(e) => setVolume(parseFloat(e.target.value))}
-      />
-      <input
-        type='number' min={0} max={1}
-        value={volume}
-        onChange={(e) => setVolume(parseFloat(e.target.value))}
-      />
-    </div>
-    <div>
       <label>Mode</label>
       <select
         value={mode}
@@ -283,8 +288,10 @@ function Controls() {
         <option value='AM'>AM</option>
       </select>
     </div>
-    <ModulatorControls />
-    <CarrierControls />
+    <div className='flex'>
+      <ModulatorControls />
+      <CarrierControls />
+    </div>
     <div>
       <label>Max Voices</label>
       <input
@@ -367,7 +374,7 @@ function App() {
     <>
       <div className='fixed flex flex-col w-full h-full'>
         <h1>Web Audio Synth</h1>
-        <div className='grow'>
+        <div className='grow overflow-y-auto'>
           <Controls />
         </div>
         <PianoSection />
