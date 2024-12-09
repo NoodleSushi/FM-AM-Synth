@@ -32,7 +32,7 @@ function WaveLegend({ real, imag, lineWidth = 4, ...props }: WaveLegendProps) {
         const angle = Math.atan2(imag[i], real[i])
         val += Math.hypot(real[i], imag[i]) * Math.cos(i * (width - x) * Math.PI * 2 / width + angle)
       }
-      const y = (height - lineWidth / 2) - (val / 2 + 0.5) * (height - lineWidth)
+      const y = (height - lineWidth / 2) - ((val * 0.8) / 2 + 0.5) * (height - lineWidth)
       if (x === 0) {
         ctx.moveTo(x, y)
       } else {
