@@ -20,6 +20,10 @@ export const themes = {
       primary: "shadow-[rgb(255,173,187)]",
       secondary: "shadow-[rgb(255,238,240)]",
     },
+    pressed: {
+      primary: "active:bg-[rgb(255,173,187)]",
+      secondary: "active:bg-[rgb(255,238,240)]",
+    },
     keyPressed: {
       primary: "data-[pressed=true]:bg-[rgb(255,173,187)]",
       secondary: "data-[pressed=true]:bg-[rgb(255,238,240)]",

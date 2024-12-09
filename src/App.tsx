@@ -13,6 +13,7 @@ import { ThemeKeys, themes } from "./themes";
 import { useState } from "react";
 import useMediaQuery from "./Hooks/useMediaQuery";
 import Select from "./Components/Select";
+import { MdKeyboardDoubleArrowDown, MdKeyboardDoubleArrowUp } from "react-icons/md";
 
 type Props = {
   selectedTheme: ThemeKeys;
@@ -479,10 +480,6 @@ function Controls({ selectedTheme }: Props) {
     useSynthStore((state) => state.maxVoices),
     useSynthStore((state) => state.setMaxVoices),
   ];
-  const [octave, setOctave] = [
-    useAppStore((state) => state.octave),
-    useAppStore((state) => state.setOctave),
-  ];
 
   return (
     <div className="p-8 border-2 border-red-500 min-h-[1000px] flex flex-col gap-4">
@@ -566,26 +563,6 @@ function Controls({ selectedTheme }: Props) {
             onChange={(e) => setMaxVoices(parseInt(e.target.value))}
           />
         </div>
-
-        <div className="flex items-center gap-3 order-3">
-          <label>Octave</label>
-          <input
-            type="range"
-            min={0}
-            max={8}
-            step={1}
-            value={octave}
-            onChange={(e) => setOctave(parseInt(e.target.value))}
-          />
-          <input
-            type="number"
-            min={0}
-            max={8}
-            value={octave}
-            onChange={(e) => setOctave(parseInt(e.target.value))}
-          />
-        </div>
-
         <div
           onClick={initSynth}
           className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 mt-2 order-2 ${themes[selectedTheme].bg.primary}`}
@@ -618,7 +595,10 @@ function Controls({ selectedTheme }: Props) {
 }
 
 function PianoSection({ selectedTheme }: Props) {
-  const octave = useAppStore((state) => state.octave);
+  const [octave, setOctave] = [
+    useAppStore((state) => state.octave),
+    useAppStore((state) => state.setOctave),
+  ];
   const pressedNotes = useSynthStore((state) => state.pressedNotes);
   const noteOn = useSynthStore((state) => state.noteOn);
   const noteOff = useSynthStore((state) => state.noteOff);
@@ -635,6 +615,20 @@ function PianoSection({ selectedTheme }: Props) {
 
   return (
     <div className="flex justify-center items-center h-[12rem]">
+      <div className="flex flex-col w-[4.5rem] h-full">
+        <button
+          className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+          onClick={() => setOctave(Math.min(10, octave + 1))}
+        >
+          <MdKeyboardDoubleArrowUp size='4.5rem' />
+        </button>
+        <button
+          className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+          onClick={() => setOctave(Math.max(0, octave - 1))}
+        >
+          <MdKeyboardDoubleArrowDown size='4.5rem' />
+        </button>
+      </div>
       <Piano
         octave={octave}
         blackKeyRatio={0.6}
