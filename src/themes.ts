@@ -20,7 +20,7 @@ export const themes = {
       primary: "shadow-[rgb(255,173,187)]",
       secondary: "shadow-[rgb(255,238,240)]",
     },
-    pressed: {
+    keyPressed: {
       primary: "data-[pressed=true]:bg-[rgb(255,173,187)]",
       secondary: "data-[pressed=true]:bg-[rgb(255,238,240)]",
     },
