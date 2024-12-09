@@ -592,8 +592,8 @@ function PianoSection({ selectedTheme }: Props) {
     (note) => noteOff(note)
   );
 
-  return (
-    <div data-expanded={isExpanded} className="bg-white absolute data-[expanded=true]:top-0 bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-full">
+  return <>
+    <div data-expanded={isExpanded} className="transition-all ease-in-out duration-300 bg-white absolute bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-full">
       <button
         className="bg-gray-300 w-full flex justify-center"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -627,7 +627,9 @@ function PianoSection({ selectedTheme }: Props) {
         />
       </div>
     </div>
-  );
+    {/* div to fill up relative space */}
+    <div className="h-[10rem] w-full"><div className="h-[10rem] w-full"></div></div>
+  </>;
 }
 
 function App() {
