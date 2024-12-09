@@ -573,6 +573,7 @@ function Controls({ selectedTheme }: Props) {
 }
 
 function PianoSection({ selectedTheme }: Props) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const [octave, setOctave] = [
     useAppStore((state) => state.octave),
     useAppStore((state) => state.setOctave),
@@ -592,31 +593,39 @@ function PianoSection({ selectedTheme }: Props) {
   );
 
   return (
-    <div className="flex justify-center items-center h-[12rem]">
-      <div className="flex flex-col w-[4.5rem] h-full">
-        <button
-          className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
-          onClick={() => setOctave(Math.min(10, octave + 1))}
-        >
-          <MdKeyboardDoubleArrowUp size='4.5rem' />
-        </button>
-        <button
-          className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
-          onClick={() => setOctave(Math.max(0, octave - 1))}
-        >
-          <MdKeyboardDoubleArrowDown size='4.5rem' />
-        </button>
+    <div data-expanded={isExpanded} className="bg-white absolute data-[expanded=true]:top-0 bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-full">
+      <button
+        className="bg-gray-300 w-full flex justify-center"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        {isExpanded && <MdKeyboardDoubleArrowDown size='2rem' /> || <MdKeyboardDoubleArrowUp size='2rem' />}
+      </button>
+      <div className="flex w-full h-full">
+        <div className="flex flex-col w-[4rem] h-full">
+          <button
+            className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+            onClick={() => setOctave(Math.min(10, octave + 1))}
+          >
+            <MdKeyboardDoubleArrowUp size='4rem' />
+          </button>
+          <button
+            className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+            onClick={() => setOctave(Math.max(0, octave - 1))}
+          >
+            <MdKeyboardDoubleArrowDown size='4rem' />
+          </button>
+        </div>
+        <Piano
+          octave={octave}
+          blackKeyRatio={0.6}
+          className="w-full h-full"
+          whiteKeyClassName={`bg-white outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
+          blackKeyClassName={`bg-black outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
+          onNoteDown={(note) => noteOn(note)}
+          onNoteUp={(note) => noteOff(note)}
+          pressedNotes={pressedNotes}
+        />
       </div>
-      <Piano
-        octave={octave}
-        blackKeyRatio={0.6}
-        className="w-full h-[12rem]"
-        whiteKeyClassName={`bg-white outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
-        blackKeyClassName={`bg-black outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
-        onNoteDown={(note) => noteOn(note)}
-        onNoteUp={(note) => noteOff(note)}
-        pressedNotes={pressedNotes}
-      />
     </div>
   );
 }
