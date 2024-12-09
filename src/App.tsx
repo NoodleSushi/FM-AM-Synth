@@ -286,7 +286,7 @@ function CarrierControls({ selectedTheme }: Props) {
   return (
     <div className={`rounded-[2rem] py-4 px-6 bg-white flex flex-col gap-2`}>
       <div className="flex items-center gap-3">
-        <label className="w-1/3">Carrier Volume</label>
+        <label className="w-1/3">Carrier Level</label>
         <input
           className="w-1/3"
           type="range"
