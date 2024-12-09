@@ -89,6 +89,42 @@
         "carWavePhase": 0,
         "carWaveN": 512
       }
+    },
+    {
+      "name": "Lo-Fi Organ I",
+      "state": {
+        "volume": 0.2,
+        "mode": "FM",
+        "modLevel": 1,
+        "modRatio": 0,
+        "modOffset": 1,
+        "modIdx": 0,
+        "modDepth": 1,
+        "modWaveform": "sin",
+        "modWavePhase": 0,
+        "modWaveN": 512,
+        "carWaveform": "sqr",
+        "carWavePhase": 0,
+        "carWaveN": 3
+      }
+    },
+    {
+      "name": "Lo-Fi Organ II",
+      "state": {
+        "volume": 0.2,
+        "mode": "AM",
+        "modLevel": 1,
+        "modRatio": 1,
+        "modOffset": 1,
+        "modIdx": 0,
+        "modDepth": 1,
+        "modWaveform": "sqr",
+        "modWavePhase": 1.3,
+        "modWaveN": 14,
+        "carWaveform": "sin",
+        "carWavePhase": 0,
+        "carWaveN": 512
+      }
     }
   ]
 }
