@@ -1,3 +1,49 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input[type="range"] {
+  accent-color: rgb(255, 173, 187);
+  cursor: pointer;
+}
+
+/* input[type="range"]:focus {
+  accent-color: rgb(255, 126, 148);
+} */
+
+input[type="number"] {
+  padding-inline: 8px;
+  padding-block: 4px;
+  border-radius: 8px;
+  background-color: rgb(255, 238, 240);
+  width: 5rem;
+}
+
+input[type="number"]:focus {
+  outline: 2px solid rgb(255, 173, 187);
+  outline-offset: 2px;
+}
+
+/* Scrollbar width */
+::-webkit-scrollbar {
+  width: 12px; /* Vertical scrollbar width */
+  height: 12px; /* Horizontal scrollbar height */
+}
+
+/* Scrollbar track */
+::-webkit-scrollbar-track {
+  background: white;
+  border-radius: 6px;
+}
+
+/* Scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: rgb(255, 173, 187);
+  border-radius: 6px;
+}
+
+/* On hover */
+::-webkit-scrollbar-thumb:hover {
+  cursor: pointer;
+  background: rgb(255, 126, 148);
+}

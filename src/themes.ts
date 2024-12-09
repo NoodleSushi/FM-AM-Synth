@@ -1,4 +1,4 @@
-const themes = {
+export const themes = {
   pink: {
     bg: {
       primary: "bg-[rgb(255,173,187)]",
@@ -12,7 +12,23 @@ const themes = {
       primary: "border-[rgb(255,173,187)]",
       secondary: "border-[rgb(255,238,240)]",
     },
+    outline: {
+      primary: "outline-[rgb(255,173,187)]",
+      secondary: "outline-[rgb(255,238,240)]",
+    },
+    shadow: {
+      primary: "shadow-[rgb(255,173,187)]",
+      secondary: "shadow-[rgb(255,238,240)]",
+    },
     pressed: {
+      primary: "data-[pressed=true]:bg-[rgb(255,173,187)]",
+      secondary: "data-[pressed=true]:bg-[rgb(255,238,240)]",
+    },
+    scrollbarThumb: {
+      primary: "data-[pressed=true]:bg-[rgb(255,173,187)]",
+      secondary: "data-[pressed=true]:bg-[rgb(255,238,240)]",
+    },
+    scrollbarTrack: {
       primary: "data-[pressed=true]:bg-[rgb(255,173,187)]",
       secondary: "data-[pressed=true]:bg-[rgb(255,238,240)]",
     },
