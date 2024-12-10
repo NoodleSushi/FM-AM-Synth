@@ -39,8 +39,6 @@ const Select = ({
         selectedTheme === "pink" ? "hover:bg-white" : "hover:bg-black";
     }
 
-    console.log(hoverColor);
-
     return hoverColor;
   };
 
@@ -50,7 +48,11 @@ const Select = ({
         onClick={() => setShowDropdown(!showDropdown)}
         className={`px-2 py-1 w-[10rem] rounded-lg cursor-pointer flex items-center justify-between ${
           showDropdown
-            ? `outline outline-2 outline-offset-2 ${themes[selectedTheme].outline.primary}`
+            ? `outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.outline.primary
+                  : themes.violet.outline.secondary
+              }`
             : ""
         } ${bgColor}`}
       >
@@ -61,7 +63,11 @@ const Select = ({
 
       {showDropdown && (
         <div
-          className={`absolute left-0 right-0 top-9 py-1 rounded-lg shadow-sm z-10 ${themes[selectedTheme].shadow.primary} ${bgColor}`}
+          className={`absolute left-0 right-0 top-9 py-1 rounded-lg shadow-sm z-10 ${
+            selectedTheme === "pink"
+              ? themes.pink.shadow.primary
+              : themes.violet.shadow.secondary
+          } ${bgColor}`}
         >
           <div className="overflow-auto">
             {options.map(({ value, label }) => (
