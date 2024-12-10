@@ -10,7 +10,7 @@ import WaveLegend from "./Components/WaveLegend";
 import Presets from "./presets.json";
 import { Waveform, waveforms } from "./utils";
 import { ThemeKeys, themes } from "./themes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useMediaQuery from "./Hooks/useMediaQuery";
 import Select from "./Components/Select";
 import {
@@ -669,7 +669,7 @@ function Controls({ selectedTheme, setSelectedTheme }: Props) {
         <CarrierControls selectedTheme={selectedTheme} />
       </div>
 
-      <footer className="absolute left-0 right-0 bottom-2 text-center text-sm flex flex-col gap-2">
+      <footer className="absolute left-0 right-0 bottom-8 text-center text-sm flex flex-col gap-2">
         <div className={`flex gap-3 justify-center`}>
           <a
             href="https://www.canva.com/design/DAGW66If62k/JHXAcvvMxPDP-3MqZ7Kemw/edit?utm_content=DAGW66If62k&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton"
@@ -708,6 +708,9 @@ function PianoSection({ selectedTheme }: Props) {
   const pressedNotes = useSynthStore((state) => state.pressedNotes);
   const noteOn = useSynthStore((state) => state.noteOn);
   const noteOff = useSynthStore((state) => state.noteOff);
+  const isLandscapePhone = useMediaQuery(
+    "(max-device-width: 940px) and (orientation: landscape) and (min-aspect-ratio: 3/2)"
+  );
 
   useKeyboardMapping(
     (note) => noteOn(octave * 12 + note),
@@ -723,7 +726,11 @@ function PianoSection({ selectedTheme }: Props) {
     <>
       <div
         data-expanded={isExpanded}
-        className="transition-all ease-in-out duration-300 bg-white text-black absolute bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-[80vh]"
+        className={`transition-all ease-in-out duration-300 bg-white text-black absolute bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center ${
+          isLandscapePhone
+            ? "data-[expanded=false]:h-[0.5rem] data-[expanded=true]:h-[45vh]"
+            : "data-[expanded=false]:h-[10rem] data-[expanded=true]:h-[80vh]"
+        }`}
       >
         <button
           className={`${themes[selectedTheme].bg.primary} w-full flex justify-center`}
@@ -769,9 +776,9 @@ function PianoSection({ selectedTheme }: Props) {
         </div>
       </div>
       {/* div to fill up relative space */}
-      <div className="h-[10rem] w-full">
+      {(isExpanded || !isLandscapePhone) && <div className={`h-[10rem] w-full ${themes[selectedTheme].bg.secondary}`}>
         <div className="h-[10rem] w-full"></div>
-      </div>
+      </div>}
     </>
   );
 }
@@ -782,6 +789,42 @@ function Header({ selectedTheme }: Props) {
   const isTabletScreens = useMediaQuery("(max-width: 1248px)");
   const [showOscAndSpec, setShowOscAndSpec] = useState(false);
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
+  const isLandscapePhone = useMediaQuery(
+    "(max-device-width: 940px) and (orientation: landscape) and (min-aspect-ratio: 3/2)"
+  );
+
+  // useEffect(() => {
+  //   console.log(isLandscapePhone);
+  // }, [isLandscapePhone]);
+
+  const getOscAndSpecPosition = () => {
+    let pos;
+
+    if (showOscAndSpec) {
+      pos = "top-16";
+    } else {
+      if (isLandscapePhone) {
+        pos = "-top-24";
+      } else {
+        pos = "-top-44";
+      }
+    }
+
+    return pos;
+  };
+
+  const getOscAndSpecWidth = () => {
+    let width = "w-[32rem]";
+
+    if (isPhoneScreens) {
+      width = "w-[22rem]";
+    }
+    if (isLandscapePhone) {
+      width = "w-[18rem]";
+    }
+
+    return width;
+  };
 
   return (
     <nav>
@@ -817,22 +860,19 @@ function Header({ selectedTheme }: Props) {
         {isTabletScreens && (
           <div
             onClick={() => setShowOscAndSpec(!showOscAndSpec)}
-            className={`flex flex-col gap-2 pt-6 items-center cursor-pointer absolute left-0 right-0 transition-all duration-300 ${
-              showOscAndSpec ? "top-16" : "-top-44"
-            } ${themes[selectedTheme].bg.primary}`}
+            className={`flex flex-col gap-2 pt-6 items-center cursor-pointer absolute left-0 right-0 transition-all duration-300 ${getOscAndSpecPosition()} ${
+              themes[selectedTheme].bg.primary
+            }`}
           >
-            {/* {showOscAndSpec && ( */}
             <div
-              className={`flex flex-col gap-4 ${
+              className={`flex ${isLandscapePhone ? "" : "flex-col"} gap-4 ${
                 showOscAndSpec ? "" : "invisible"
               }`}
             >
               <Oscilloscope
                 analyzer={analyzer}
                 alignHz={lastNoteHz}
-                className={`${
-                  isPhoneScreens ? "w-[22rem]" : "w-[32rem]"
-                } h-[6rem] ${
+                className={`${getOscAndSpecWidth()} h-[6rem] ${
                   themes[selectedTheme].bg.secondary
                 } rounded-lg outline outline-2 ${
                   selectedTheme === "pink" ? "outline-black" : "outline-white"
@@ -840,16 +880,13 @@ function Header({ selectedTheme }: Props) {
               />
               <Spectrum
                 analyzer={analyzer}
-                className={`${
-                  isPhoneScreens ? "w-[22rem]" : "w-[32rem]"
-                } h-[6rem] ${
+                className={`${getOscAndSpecWidth()} h-[6rem] ${
                   themes[selectedTheme].bg.secondary
                 } rounded-lg outline outline-2 ${
                   selectedTheme === "pink" ? "outline-black" : "outline-white"
                 }`}
               />
             </div>
-            {/* )} */}
             {showOscAndSpec ? (
               <MdKeyboardDoubleArrowUp size="2rem" />
             ) : (
