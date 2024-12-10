@@ -827,8 +827,16 @@ function PianoSection({ selectedTheme }: Props) {
             octave={octave}
             blackKeyRatio={0.6}
             className="w-full h-full"
-            whiteKeyClassName={`bg-white outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
-            blackKeyClassName={`bg-black outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
+            whiteKeyClassName={`bg-white outline outline-2 ${
+              selectedTheme === "pink"
+                ? themes.pink.keyPressed.primary
+                : themes.violet.keyPressed.secondary
+            } cursor-pointer`}
+            blackKeyClassName={`bg-black outline outline-2 ${
+              selectedTheme === "pink"
+                ? themes.pink.keyPressed.primary
+                : themes.violet.keyPressed.secondary
+            } cursor-pointer`}
             onNoteDown={(note) => noteOn(note)}
             onNoteUp={(note) => noteOff(note)}
             pressedNotes={pressedNotes}
