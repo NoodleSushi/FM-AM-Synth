@@ -732,7 +732,7 @@ function Controls({ selectedTheme, setSelectedTheme }: Props) {
       <footer className="absolute left-0 right-0 bottom-8 text-center text-sm flex flex-col gap-2">
         <div className={`flex gap-3 justify-center`}>
           <a
-            href="https://www.canva.com/design/DAGW66If62k/JHXAcvvMxPDP-3MqZ7Kemw/edit?utm_content=DAGW66If62k&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton"
+            href="https://www.canva.com/design/DAGW66If62k/dyh5g6tYqt3JTxCXQK58uQ/view?utm_content=DAGW66If62k&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hd30dd9ac29"
             target="_blank"
             className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
           >
