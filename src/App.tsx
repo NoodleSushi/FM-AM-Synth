@@ -570,7 +570,7 @@ function Controls({ selectedTheme }: Props) {
   const getHeight = () => {
     let height = "h-[49rem]";
     if (isTabletScreens) height = "h-[86rem]";
-    if (isPhoneScreens) height = "h-[96rem]";
+    if (isPhoneScreens) height = "h-[98rem]";
 
     return height;
   };
@@ -656,7 +656,7 @@ function Controls({ selectedTheme }: Props) {
         <CarrierControls selectedTheme={selectedTheme} />
       </div>
 
-      <footer className="absolute left-0 right-0 bottom-2 text-center">
+      <footer className="absolute left-0 right-0 bottom-2 text-center text-sm">
         <p>&copy; 2024 Group 3 in SIGNALS AND SYSTEMS.</p>
         <p>Chiang, Chiu, Curativo, Jakosalem, Sagun, Sia</p>
         <p>All Rights Reserved.</p>
