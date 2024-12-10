@@ -98,7 +98,13 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={0}
               max={1}
               value={modLevel}
@@ -156,7 +162,13 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={0}
               max={6.28}
               value={modWavePhase}
@@ -186,7 +198,13 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={1}
               max={512}
               value={modWaveN}
@@ -216,7 +234,13 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span>x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={0}
               max={64}
               value={modRatio}
@@ -246,7 +270,13 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={-1000}
               max={1000}
               value={modOffset}
@@ -278,7 +308,13 @@ function ModulatorControls({ selectedTheme }: Props) {
                 <span>x</span>
                 <input
                   type="number"
-                  className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+                  className={`${
+                    themes[selectedTheme].bg.secondary
+                  } focus:outline outline-2 outline-offset-2 ${
+                    selectedTheme === "pink"
+                      ? themes.pink.focusOutline.primary
+                      : themes.violet.focusOutline.secondary
+                  }`}
                   min={0}
                   max={50}
                   value={modIdx}
@@ -308,7 +344,13 @@ function ModulatorControls({ selectedTheme }: Props) {
                 <span className="invisible">x</span>
                 <input
                   type="number"
-                  className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+                  className={`${
+                    themes[selectedTheme].bg.secondary
+                  } focus:outline outline-2 outline-offset-2 ${
+                    selectedTheme === "pink"
+                      ? themes.pink.focusOutline.primary
+                      : themes.violet.focusOutline.secondary
+                  }`}
                   min={0}
                   max={1000}
                   value={modDepth}
@@ -383,7 +425,13 @@ function CarrierControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={0}
               max={1}
               value={volume}
@@ -441,7 +489,13 @@ function CarrierControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={0}
               max={6.28}
               value={carWavePhase}
@@ -471,7 +525,13 @@ function CarrierControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
+              className={`${
+                themes[selectedTheme].bg.secondary
+              } focus:outline outline-2 outline-offset-2 ${
+                selectedTheme === "pink"
+                  ? themes.pink.focusOutline.primary
+                  : themes.violet.focusOutline.secondary
+              }`}
               min={1}
               max={512}
               value={carWaveN}
@@ -776,9 +836,13 @@ function PianoSection({ selectedTheme }: Props) {
         </div>
       </div>
       {/* div to fill up relative space */}
-      {(isExpanded || !isLandscapePhone) && <div className={`h-[10rem] w-full ${themes[selectedTheme].bg.secondary}`}>
-        <div className="h-[10rem] w-full"></div>
-      </div>}
+      {(isExpanded || !isLandscapePhone) && (
+        <div
+          className={`h-[10rem] w-full ${themes[selectedTheme].bg.secondary}`}
+        >
+          <div className="h-[10rem] w-full"></div>
+        </div>
+      )}
     </>
   );
 }
