@@ -48,7 +48,7 @@ function Piano({
   }
 
   const handlePointerEnter = (note: number) => (e: React.PointerEvent) => {
-    if (e.buttons !== 1) return;
+    if (e.buttons !== 1 || e.pointerType === "touch") return;
     handlePointerDown(note)(e);
   }
 
