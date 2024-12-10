@@ -10,7 +10,7 @@ import WaveLegend from "./Components/WaveLegend";
 import Presets from "./presets.json";
 import { Waveform, waveforms } from "./utils";
 import { ThemeKeys, themes } from "./themes";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useMediaQuery from "./Hooks/useMediaQuery";
 import Select from "./Components/Select";
 import {
