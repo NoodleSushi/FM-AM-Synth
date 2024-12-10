@@ -18,9 +18,11 @@ import {
   MdKeyboardDoubleArrowUp,
 } from "react-icons/md";
 import { PiWaveSineBold } from "react-icons/pi";
+import { FaMoon, FaSun } from "react-icons/fa6";
 
 type Props = {
   selectedTheme: ThemeKeys;
+  setSelectedTheme?: (value: ThemeKeys) => void;
 };
 
 type AppState = {
@@ -71,7 +73,11 @@ function ModulatorControls({ selectedTheme }: Props) {
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
   return (
-    <div className={`rounded-[2rem] py-4 px-6 bg-white flex flex-col gap-2`}>
+    <div
+      className={`rounded-[2rem] py-4 px-6 ${
+        selectedTheme === "pink" ? "bg-white" : "bg-black"
+      } flex flex-col gap-2`}
+    >
       <div
         className={`flex ${
           isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
@@ -92,7 +98,7 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={0}
               max={1}
               value={modLevel}
@@ -121,11 +127,11 @@ function ModulatorControls({ selectedTheme }: Props) {
               label: name,
             }))}
             selectedOption={modWaveform}
+            selectedTheme={selectedTheme}
             onChange={(value) => {
               setModWaveform(value as Waveform);
             }}
-            bgColor="bg-[rgb(255,238,240)]"
-            // bgColor="bg-white"
+            bgColor={themes[selectedTheme].bg.secondary}
           />
           <span className="invisible">rad</span>
         </div>
@@ -150,7 +156,7 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={0}
               max={6.28}
               value={modWavePhase}
@@ -180,7 +186,7 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={1}
               max={512}
               value={modWaveN}
@@ -210,7 +216,7 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span>x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={0}
               max={64}
               value={modRatio}
@@ -240,7 +246,7 @@ function ModulatorControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={-1000}
               max={1000}
               value={modOffset}
@@ -272,7 +278,7 @@ function ModulatorControls({ selectedTheme }: Props) {
                 <span>x</span>
                 <input
                   type="number"
-                  className={`${themes[selectedTheme].bg.secondary}`}
+                  className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
                   min={0}
                   max={50}
                   value={modIdx}
@@ -302,7 +308,7 @@ function ModulatorControls({ selectedTheme }: Props) {
                 <span className="invisible">x</span>
                 <input
                   type="number"
-                  className={`${themes[selectedTheme].bg.secondary}`}
+                  className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
                   min={0}
                   max={1000}
                   value={modDepth}
@@ -316,12 +322,15 @@ function ModulatorControls({ selectedTheme }: Props) {
       )}
       <div className="my-4 flex justify-center">
         <WaveLegend
+          lineColor={selectedTheme === "pink" ? "black" : "white"}
           real={modComps.real}
           imag={modComps.imag}
           // className="w-full h-[4rem] bg-black text-[#00ff00]"
           className={`${isPhoneScreens ? "w-[22rem]" : "w-[32rem] h-[12rem]"} ${
             themes[selectedTheme].bg.secondary
-          } rounded-lg outline outline-2 outline-black`}
+          } rounded-lg outline outline-2 ${
+            selectedTheme === "pink" ? "outline-black" : "outline-white"
+          }`}
         />
       </div>
     </div>
@@ -349,7 +358,11 @@ function CarrierControls({ selectedTheme }: Props) {
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
   return (
-    <div className={`rounded-[2rem] py-4 px-6 bg-white flex flex-col gap-2`}>
+    <div
+      className={`rounded-[2rem] py-4 px-6 ${
+        selectedTheme === "pink" ? "bg-white" : "bg-black"
+      } flex flex-col gap-2`}
+    >
       <div
         className={`flex ${
           isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
@@ -370,7 +383,7 @@ function CarrierControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={0}
               max={1}
               value={volume}
@@ -399,11 +412,11 @@ function CarrierControls({ selectedTheme }: Props) {
               label: name,
             }))}
             selectedOption={carWaveform}
+            selectedTheme={selectedTheme}
             onChange={(value) => {
               setCarWaveform(value as Waveform);
             }}
-            bgColor="bg-[rgb(255,238,240)]"
-            // bgColor="bg-white"
+            bgColor={themes[selectedTheme].bg.secondary}
           />
           <span className="invisible">rad</span>
         </div>
@@ -428,7 +441,7 @@ function CarrierControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={0}
               max={6.28}
               value={carWavePhase}
@@ -458,7 +471,7 @@ function CarrierControls({ selectedTheme }: Props) {
             <span className="invisible">x</span>
             <input
               type="number"
-              className={`${themes[selectedTheme].bg.secondary}`}
+              className={`${themes[selectedTheme].bg.secondary} focus:outline outline-2 outline-offset-2 ${themes[selectedTheme].focusOutline.primary}`}
               min={1}
               max={512}
               value={carWaveN}
@@ -470,19 +483,22 @@ function CarrierControls({ selectedTheme }: Props) {
       </div>
       <div className="my-4 flex justify-center">
         <WaveLegend
+          lineColor={selectedTheme === "pink" ? "black" : "white"}
           real={carComps.real}
           imag={carComps.imag}
           // className="w-full h-[4rem] bg-black text-[#00ff00]"
           className={`${isPhoneScreens ? "w-[22rem]" : "w-[32rem] h-[12rem]"} ${
             themes[selectedTheme].bg.secondary
-          } rounded-lg outline outline-2 outline-black`}
+          } rounded-lg outline outline-2 ${
+            selectedTheme === "pink" ? "outline-black" : "outline-white"
+          }`}
         />
       </div>
     </div>
   );
 }
 
-function PresetsManager() {
+function PresetsManager({ selectedTheme }: Props) {
   const setVolume = useSynthStore((state) => state.setVolume);
   const setMode = useSynthStore((state) => state.setMode);
   const setModLevel = useSynthStore((state) => state.setModLevel);
@@ -530,6 +546,7 @@ function PresetsManager() {
           label: preset.name,
         }))}
         selectedOption="0"
+        selectedTheme={selectedTheme}
         onChange={(value) => {
           const preset = Presets["presets"][parseInt(value)];
           setVolume(preset.state.volume);
@@ -546,15 +563,13 @@ function PresetsManager() {
           setCarWavePhase(preset.state.carWavePhase);
           setCarWaveN(preset.state.carWaveN);
         }}
-        //  className="bg-[rgb(255,238,240)]"
-        bgColor="bg-white"
+        bgColor={selectedTheme === "pink" ? "bg-white" : "bg-black"}
       />
     </div>
   );
 }
 
-function Controls({ selectedTheme }: Props) {
-  const isMobile = useIsMobile();
+function Controls({ selectedTheme, setSelectedTheme }: Props) {
   const isTabletScreens = useMediaQuery("(max-width: 1248px)");
 
   const initSynth = useSynthStore((state) => state.init);
@@ -568,9 +583,9 @@ function Controls({ selectedTheme }: Props) {
   ];
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
   const getHeight = () => {
-    let height = "h-[49rem]";
-    if (isTabletScreens) height = "h-[86rem]";
-    if (isPhoneScreens) height = "h-[98rem]";
+    let height = "h-[52rem]";
+    if (isTabletScreens) height = "h-[90rem]";
+    if (isPhoneScreens) height = "h-[102rem]";
 
     return height;
   };
@@ -584,10 +599,10 @@ function Controls({ selectedTheme }: Props) {
       {/* PRESETS, MASTER VOLUME, MODE, & KILL SYNTH */}
       <div
         className={`flex justify-between ${
-          isMobile || isTabletScreens ? "flex-col gap-2" : ""
+          isTabletScreens ? "flex-col gap-2" : ""
         }`}
       >
-        <PresetsManager />
+        <PresetsManager selectedTheme={selectedTheme} />
         <div
           className={`flex ${
             isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
@@ -606,7 +621,9 @@ function Controls({ selectedTheme }: Props) {
             />
             <input
               type="number"
-              className={`bg-white`}
+              className={`${
+                selectedTheme === "pink" ? "bg-white" : "bg-black"
+              }`}
               min={0}
               max={1}
               value={masterVolume}
@@ -629,11 +646,11 @@ function Controls({ selectedTheme }: Props) {
               { value: "AM", label: "AM" },
             ]}
             selectedOption={mode}
+            selectedTheme={selectedTheme}
             onChange={(value) => {
               setMode(value as SynthMode);
             }}
-            //  className="bg-[rgb(255,238,240)]"
-            bgColor="bg-white"
+            bgColor={selectedTheme === "pink" ? "bg-white" : "bg-black"}
           />
         </div>
         <div className="flex justify-between items-center">
@@ -647,19 +664,36 @@ function Controls({ selectedTheme }: Props) {
       </div>
 
       {/* MODULATOR & CARRIER */}
-      <div
-        className={`flex gap-8 ${
-          isMobile || isTabletScreens ? "flex-col" : ""
-        }`}
-      >
+      <div className={`flex gap-8 ${isTabletScreens ? "flex-col" : ""}`}>
         <ModulatorControls selectedTheme={selectedTheme} />
         <CarrierControls selectedTheme={selectedTheme} />
       </div>
 
-      <footer className="absolute left-0 right-0 bottom-2 text-center text-sm">
-        <p>&copy; 2024 Group 3 in SIGNALS AND SYSTEMS.</p>
-        <p>Chiang, Chiu, Curativo, Jakosalem, Sagun, Sia</p>
-        <p>All Rights Reserved.</p>
+      <footer className="absolute left-0 right-0 bottom-2 text-center text-sm flex flex-col gap-2">
+        <div className={`flex gap-3 justify-center`}>
+          <a
+            href="https://www.canva.com/design/DAGW66If62k/JHXAcvvMxPDP-3MqZ7Kemw/edit?utm_content=DAGW66If62k&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton"
+            target="_blank"
+            className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
+          >
+            See Poster
+          </a>
+          <div
+            onClick={() => {
+              if (setSelectedTheme)
+                setSelectedTheme(selectedTheme === "pink" ? "violet" : "pink");
+            }}
+            className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 flex items-center gap-2 ${themes[selectedTheme].bg.primary}`}
+          >
+            {selectedTheme === "pink" ? <FaSun /> : <FaMoon />}
+            Change Theme
+          </div>
+        </div>
+        <div>
+          <p>&copy; 2024 Group 3 in SIGNALS AND SYSTEMS.</p>
+          <p>Chiang, Chiu, Curativo, Jakosalem, Sagun, Sia</p>
+          <p>All Rights Reserved.</p>
+        </div>
       </footer>
     </div>
   );
@@ -689,14 +723,22 @@ function PianoSection({ selectedTheme }: Props) {
     <>
       <div
         data-expanded={isExpanded}
-        className="transition-all ease-in-out duration-300 bg-white absolute bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-[80vh]"
+        className="transition-all ease-in-out duration-300 bg-white text-black absolute bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-[80vh]"
       >
         <button
           className={`${themes[selectedTheme].bg.primary} w-full flex justify-center`}
           onClick={() => setIsExpanded(!isExpanded)}
         >
-          {(isExpanded && <MdKeyboardDoubleArrowDown size="2rem" />) || (
-            <MdKeyboardDoubleArrowUp size="2rem" />
+          {(isExpanded && (
+            <MdKeyboardDoubleArrowDown
+              size="2rem"
+              color={selectedTheme === "pink" ? "black" : "white"}
+            />
+          )) || (
+            <MdKeyboardDoubleArrowUp
+              size="2rem"
+              color={selectedTheme === "pink" ? "black" : "white"}
+            />
           )}
         </button>
         <div className="flex w-full h-full">
@@ -734,10 +776,9 @@ function PianoSection({ selectedTheme }: Props) {
   );
 }
 
-function Header() {
+function Header({ selectedTheme }: Props) {
   const lastNoteHz = useSynthStore((state) => state.lastNoteHz);
   const analyzer = useSynthStore((state) => state.analyzer);
-  const [selectedTheme] = useState<ThemeKeys>("pink");
   const isTabletScreens = useMediaQuery("(max-width: 1248px)");
   const [showOscAndSpec, setShowOscAndSpec] = useState(false);
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
@@ -757,11 +798,19 @@ function Header() {
             <Oscilloscope
               analyzer={analyzer}
               alignHz={lastNoteHz}
-              className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.secondary} rounded-lg outline outline-2 outline-black`}
+              className={`w-[32rem] h-[6rem] ${
+                themes[selectedTheme].bg.secondary
+              } rounded-lg outline outline-2 ${
+                selectedTheme === "pink" ? "outline-black" : "outline-white"
+              }`}
             />
             <Spectrum
               analyzer={analyzer}
-              className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.secondary} rounded-lg outline outline-2 outline-black`}
+              className={`w-[32rem] h-[6rem] ${
+                themes[selectedTheme].bg.secondary
+              } rounded-lg outline outline-2 ${
+                selectedTheme === "pink" ? "outline-black" : "outline-white"
+              }`}
             />
           </div>
         )}
@@ -785,7 +834,9 @@ function Header() {
                   isPhoneScreens ? "w-[22rem]" : "w-[32rem]"
                 } h-[6rem] ${
                   themes[selectedTheme].bg.secondary
-                } rounded-lg outline outline-2 outline-black`}
+                } rounded-lg outline outline-2 ${
+                  selectedTheme === "pink" ? "outline-black" : "outline-white"
+                }`}
               />
               <Spectrum
                 analyzer={analyzer}
@@ -793,7 +844,9 @@ function Header() {
                   isPhoneScreens ? "w-[22rem]" : "w-[32rem]"
                 } h-[6rem] ${
                   themes[selectedTheme].bg.secondary
-                } rounded-lg outline outline-2 outline-black`}
+                } rounded-lg outline outline-2 ${
+                  selectedTheme === "pink" ? "outline-black" : "outline-white"
+                }`}
               />
             </div>
             {/* )} */}
@@ -814,17 +867,58 @@ function App() {
   const audioCtxState = useSynthStore((state) => state.audioCtx?.state || "");
   const isMobile = useIsMobile();
 
-  const [selectedTheme] = useState<ThemeKeys>("pink");
+  const [selectedTheme, setSelectedTheme] = useState<ThemeKeys>("pink");
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
+  const scrollbarStyles = `
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: ${selectedTheme === "pink" ? "white" : "white"};
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 100px;
+      background: ${
+        selectedTheme === "pink" ? "rgb(255,173,187)" : "rgb(16,0,43)"
+      };
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      cursor: pointer;
+      background: ${
+        selectedTheme === "pink" ? "rgb(255, 111, 135)" : "rgb(37, 0, 100)"
+      };
+    }
+  `;
+
+  const inputRangeStyles = `
+    input[type="range"] {
+      accent-color: ${
+        selectedTheme === "pink" ? "rgb(255,173,187)" : "rgb(60,9,108)"
+      };
+      cursor: pointer;
+    }
+  `;
+
   return (
-    <>
+    <div
+      className={`${selectedTheme === "pink" ? "text-black" : "text-white"}`}
+    >
+      <style>{scrollbarStyles}</style>
+      <style>{inputRangeStyles}</style>
       <div className="fixed flex flex-col w-full h-full font-poppins">
-        <Header />
+        <Header selectedTheme={selectedTheme} />
         <div
           className={`grow overflow-y-auto flex justify-center ${themes[selectedTheme].bg.secondary}`}
         >
-          <Controls selectedTheme={selectedTheme} />
+          <Controls
+            selectedTheme={selectedTheme}
+            setSelectedTheme={setSelectedTheme}
+          />
         </div>
         <PianoSection selectedTheme={selectedTheme} />
       </div>
@@ -845,7 +939,7 @@ function App() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

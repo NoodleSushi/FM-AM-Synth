@@ -4,9 +4,10 @@ type WaveLegendProps = {
   real: Float32Array,
   imag: Float32Array,
   lineWidth?: number,
+  lineColor?: string;
 } & React.HTMLAttributes<HTMLDivElement>
 
-function WaveLegend({ real, imag, lineWidth = 4, ...props }: WaveLegendProps) {
+function WaveLegend({ real, imag, lineWidth = 4, lineColor, ...props }: WaveLegendProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const animate = () => {
@@ -22,7 +23,10 @@ function WaveLegend({ real, imag, lineWidth = 4, ...props }: WaveLegendProps) {
     ctx.clearRect(0, 0, width, height)
 
     ctx.lineWidth = lineWidth
-    ctx.strokeStyle = window.getComputedStyle(canvas).color
+    // ctx.strokeStyle = window.getComputedStyle(canvas).color
+    ctx.strokeStyle = lineColor
+      ? lineColor
+      : window.getComputedStyle(canvas).color;
     ctx.beginPath()
 
     for (let x = 0; x < width; x++) {
@@ -46,8 +50,13 @@ function WaveLegend({ real, imag, lineWidth = 4, ...props }: WaveLegendProps) {
     requestAnimationFrame(animate)
   }, [imag, real])
 
+  // to change the line color whenever selectedTheme changes
+  useEffect(() => {
+    animate(); 
+  }, [lineColor, real, imag]);
+
   return <div {...props}>
-    <canvas className='w-full h-full' ref={canvasRef} />
+    <canvas className={`w-full h-full`} ref={canvasRef} />
   </div>
 }
 
