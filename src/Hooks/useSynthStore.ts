@@ -104,7 +104,7 @@ function createVoice(
   const modFreq = audioCtx.createGain()
   const modIdx = new GainNode(audioCtx, { gain: 0 })
   const modOsc = new OscillatorNode(audioCtx, { frequency: 0 })
-  const modDepth = audioCtx.createGain()
+  const modDepth = new GainNode(audioCtx, { gain: mode === 'FM' ? 0 : 1 })
   const modEnv = audioCtx.createGain()
   const modLevel = new GainNode(audioCtx, { gain: 0 })
   const modOut = audioCtx.createGain()
