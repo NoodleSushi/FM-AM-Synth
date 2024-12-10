@@ -34,6 +34,7 @@ interface SynthState {
   modDepthConstSource: ConstantSourceNode,
   modLevelConstSource: ConstantSourceNode,
   DCOffsetConstSource: ConstantSourceNode,
+  modLevelInvConstSource: ConstantSourceNode,
   analyzer: AnalyserNode,
   gain: GainNode,
   masterGain: GainNode,
@@ -97,6 +98,7 @@ function createVoice(
   modDepthCS: ConstantSourceNode,
   modLevelCS: ConstantSourceNode,
   DCOffsetCS: ConstantSourceNode,
+  modLevelInv: ConstantSourceNode,
   dest?: AudioNode
 ): Voice {
   const noteFreq = new ConstantSourceNode(audioCtx, { offset: midiToHz(note) })
@@ -104,7 +106,7 @@ function createVoice(
   const modFreq = audioCtx.createGain()
   const modIdx = new GainNode(audioCtx, { gain: 0 })
   const modOsc = new OscillatorNode(audioCtx, { frequency: 0 })
-  const modDepth = audioCtx.createGain()
+  const modDepth = new GainNode(audioCtx, { gain: mode === 'FM' ? 0 : 1 })
   const modEnv = audioCtx.createGain()
   const modLevel = new GainNode(audioCtx, { gain: 0 })
   const modOut = audioCtx.createGain()
@@ -134,6 +136,7 @@ function createVoice(
   } else {
     modOut.connect(carDepth.gain)
     DCOffsetCS.connect(modOut)
+    modLevelInv.connect(carDepth.gain)
   }
 
   carOsc.setPeriodicWave(carPeriodicWave)
@@ -170,8 +173,10 @@ function createVoice(
         modIdxCS.disconnect(modIdx.gain)
         modDepthCS.disconnect(modDepth.gain)
       }
-      else if (mode === 'AM')
+      else if (mode === 'AM') {
         DCOffsetCS.disconnect(modOut)
+        modLevelInv.disconnect(carDepth.gain)
+      }
     }
   }
 }
@@ -184,6 +189,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
   modIdxConstSource: null as unknown as ConstantSourceNode,
   modDepthConstSource: null as unknown as ConstantSourceNode,
   DCOffsetConstSource: null as unknown as ConstantSourceNode,
+  modLevelInvConstSource: null as unknown as ConstantSourceNode,
   analyzer: null as unknown as AnalyserNode,
   masterGain: null as unknown as GainNode,
   gain: null as unknown as GainNode,
@@ -238,6 +244,9 @@ const useSynthStore = create<SynthState>((set, get) => ({
     const DCOffsetConstSource = get().DCOffsetConstSource ?? new ConstantSourceNode(audioCtx, {
       offset: -1,
     })
+    const modLevelInvConstSource = get().modLevelInvConstSource ?? new ConstantSourceNode(audioCtx, {
+      offset: 1 - get().modLevel,
+    })
 
     const gain = get().gain ?? audioCtx.createGain()
     const analyzer = get().analyzer ?? audioCtx.createAnalyser()
@@ -254,6 +263,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
       modDepthConstSource.start()
       modLevelConstSource.start()
       DCOffsetConstSource.start()
+      modLevelInvConstSource.start()
 
       get().updateModPeriodicWave(audioCtx)
       get().updateCarPeriodicWave(audioCtx)
@@ -278,6 +288,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
       modDepthConstSource,
       modLevelConstSource,
       DCOffsetConstSource,
+      modLevelInvConstSource,
       analyzer,
       gain,
       masterGain,
@@ -300,6 +311,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
       get().modDepthConstSource,
       get().modLevelConstSource,
       get().DCOffsetConstSource,
+      get().modLevelInvConstSource,
       get().gain,
     )
     voice.carOsc.frequency.setValueAtTime(noteHz, now)
@@ -388,6 +400,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
   setModLevel: (modLevel: number) => {
     set({ modLevel })
     get().modLevelConstSource.offset.setValueAtTime(modLevel, get().audioCtx.currentTime)
+    get().modLevelInvConstSource.offset.setValueAtTime(1 - modLevel, get().audioCtx.currentTime)
   },
   setModRatio: (modRatio: number) => {
     set({ modRatio })
