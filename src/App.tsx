@@ -568,16 +568,16 @@ function Controls({ selectedTheme }: Props) {
   ];
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
   const getHeight = () => {
-    let height = "h-[46rem]";
-    if (isTabletScreens) height = "h-[82rem]";
-    if (isPhoneScreens) height = "h-[89rem]";
+    let height = "h-[49rem]";
+    if (isTabletScreens) height = "h-[86rem]";
+    if (isPhoneScreens) height = "h-[96rem]";
 
     return height;
   };
 
   return (
     <div
-      className={`p-8 flex flex-col gap-4 overflow-hidden ${getHeight()} ${
+      className={`p-8 flex flex-col gap-4 overflow-hidden relative ${getHeight()} ${
         isTabletScreens ? `pt-16` : ``
       }`}
     >
@@ -588,24 +588,31 @@ function Controls({ selectedTheme }: Props) {
         }`}
       >
         <PresetsManager />
-        <div className="flex items-center gap-3">
+        <div
+          className={`flex ${
+            isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+          }`}
+        >
           <label>Master Volume</label>
-          {/* <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.0001}
-            value={masterVolume}
-            onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-          />
-          <input
-            type="number"
-            className={`bg-white`}
-            min={0}
-            max={1}
-            value={masterVolume}
-            onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-          /> */}
+          <div className="flex-grow flex gap-2">
+            <input
+              type="range"
+              className="w-1/2"
+              min={0}
+              max={1}
+              step={0.0001}
+              value={masterVolume}
+              onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
+            />
+            <input
+              type="number"
+              className={`bg-white`}
+              min={0}
+              max={1}
+              value={masterVolume}
+              onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
+            />
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <label>Mode</label>
@@ -648,6 +655,12 @@ function Controls({ selectedTheme }: Props) {
         <ModulatorControls selectedTheme={selectedTheme} />
         <CarrierControls selectedTheme={selectedTheme} />
       </div>
+
+      <footer className="absolute left-0 right-0 bottom-2 text-center">
+        <p>&copy; 2024 Group 3 in SIGNALS AND SYSTEMS.</p>
+        <p>Chiang, Chiu, Curativo, Jakosalem, Sagun, Sia</p>
+        <p>All Rights Reserved.</p>
+      </footer>
     </div>
   );
 }
@@ -736,7 +749,7 @@ function Header() {
       >
         <div className="flex items-center gap-2 z-50">
           <PiWaveSineBold size={40} className="-ml-[7.5px]" />
-          <h1 className="text-[1.5rem] font-[500]">FM-AM Synth</h1>
+          <h1 className="text-[1.2rem] font-[500]">FM-AM Synth</h1>
         </div>
 
         {!isTabletScreens && (
