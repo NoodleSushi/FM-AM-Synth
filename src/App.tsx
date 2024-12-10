@@ -13,7 +13,10 @@ import { ThemeKeys, themes } from "./themes";
 import { useState } from "react";
 import useMediaQuery from "./Hooks/useMediaQuery";
 import Select from "./Components/Select";
-import { MdKeyboardDoubleArrowDown, MdKeyboardDoubleArrowUp } from "react-icons/md";
+import {
+  MdKeyboardDoubleArrowDown,
+  MdKeyboardDoubleArrowUp,
+} from "react-icons/md";
 import { PiWaveSineBold } from "react-icons/pi";
 
 type Props = {
@@ -65,33 +68,42 @@ function ModulatorControls({ selectedTheme }: Props) {
     useSynthStore((state) => state.setModWaveN),
   ];
   const modComps = useSynthStore((state) => state.modComps);
+  const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
   return (
     <div className={`rounded-[2rem] py-4 px-6 bg-white flex flex-col gap-2`}>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Modulator Level</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={0}
-          max={1}
-          step={0.0001}
-          value={modLevel}
-          onChange={(e) => setModLevel(parseFloat(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span className="invisible">x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Modulator Level</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={0}
             max={1}
+            step={0.0001}
             value={modLevel}
             onChange={(e) => setModLevel(parseFloat(e.target.value))}
           />
+          <div className="flex gap-1 items-center">
+            <span className="invisible">x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={0}
+              max={1}
+              value={modLevel}
+              onChange={(e) => setModLevel(parseFloat(e.target.value))}
+            />
+            <span className="invisible">rad</span>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Modulator Waveform</label>
+      <div className="flex items-center gap-3 justify-between">
+        <label>Modulator Waveform</label>
         {/* <select
           value={modWaveform}
           onChange={(e) => setModWaveform(e.target.value as any)}
@@ -102,164 +114,214 @@ function ModulatorControls({ selectedTheme }: Props) {
             </option>
           ))}
         </select> */}
-        <Select
-          options={waveforms.map(({ waveform, name }) => ({
-            value: waveform,
-            label: name,
-          }))}
-          selectedOption={modWaveform}
-          onChange={(value) => {
-            setModWaveform(value as Waveform);
-          }}
-          bgColor="bg-[rgb(255,238,240)]"
-          // bgColor="bg-white"
-        />
+        <div className="flex gap-1 items-center">
+          <Select
+            options={waveforms.map(({ waveform, name }) => ({
+              value: waveform,
+              label: name,
+            }))}
+            selectedOption={modWaveform}
+            onChange={(value) => {
+              setModWaveform(value as Waveform);
+            }}
+            bgColor="bg-[rgb(255,238,240)]"
+            // bgColor="bg-white"
+          />
+          <span className="invisible">rad</span>
+        </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Modulator Wave Phase</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={0}
-          max={6.28}
-          step={0.0001}
-          value={modWavePhase}
-          onChange={(e) => setModWavePhase(parseFloat(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span className="invisible">x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Modulator Wave Phase</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={0}
             max={6.28}
+            step={0.0001}
             value={modWavePhase}
             onChange={(e) => setModWavePhase(parseFloat(e.target.value))}
           />
-          <span>rad</span>
+          <div className="flex gap-1 items-center">
+            <span className="invisible">x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={0}
+              max={6.28}
+              value={modWavePhase}
+              onChange={(e) => setModWavePhase(parseFloat(e.target.value))}
+            />
+            <span>rad</span>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Modulator Partial Count</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={1}
-          max={512}
-          step={1}
-          value={modWaveN}
-          onChange={(e) => setModWaveN(parseInt(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span className="invisible">x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Modulator Partial Count</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={1}
             max={512}
+            step={1}
             value={modWaveN}
             onChange={(e) => setModWaveN(parseInt(e.target.value))}
           />
+          <div className="flex gap-1 items-center">
+            <span className="invisible">x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={1}
+              max={512}
+              value={modWaveN}
+              onChange={(e) => setModWaveN(parseInt(e.target.value))}
+            />
+            <span className="invisible">rad</span>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Modulator Ratio</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={0}
-          max={64}
-          step={0.0001}
-          value={modRatio}
-          onChange={(e) => setModRatio(parseFloat(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span>x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Modulator Ratio</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={0}
             max={64}
+            step={0.0001}
             value={modRatio}
             onChange={(e) => setModRatio(parseFloat(e.target.value))}
           />
+          <div className="flex gap-1 items-center">
+            <span>x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={0}
+              max={64}
+              value={modRatio}
+              onChange={(e) => setModRatio(parseFloat(e.target.value))}
+            />
+            <span className="invisible">rad</span>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Modulator Offset</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={-1000}
-          max={1000}
-          step={0.0001}
-          value={modOffset}
-          onChange={(e) => setModOffset(parseFloat(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span className="invisible">x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Modulator Offset</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={-1000}
             max={1000}
+            step={0.0001}
             value={modOffset}
             onChange={(e) => setModOffset(parseFloat(e.target.value))}
           />
-          <span>Hz</span>
+          <div className="flex gap-1 items-center mr-2">
+            <span className="invisible">x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={-1000}
+              max={1000}
+              value={modOffset}
+              onChange={(e) => setModOffset(parseFloat(e.target.value))}
+            />
+            <span>Hz</span>
+          </div>
         </div>
       </div>
       {mode === "FM" && (
         <>
-          <div className="flex items-center gap-3">
-            <label className="w-1/3">Modulator Index</label>
-            <input
-              className="w-1/3"
-              type="range"
-              min={0}
-              max={50}
-              step={1}
-              value={modIdx}
-              onChange={(e) => setModIdx(parseFloat(e.target.value))}
-            />
-            <div className="w-1/3 flex gap-1 items-center pl-5">
-              <span>x</span>
+          <div
+            className={`flex ${
+              isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+            }`}
+          >
+            <label>Modulator Index</label>
+            <div className="flex-grow flex gap-2">
               <input
-                type="number"
+                className="flex-grow"
+                type="range"
                 min={0}
                 max={50}
+                step={1}
                 value={modIdx}
                 onChange={(e) => setModIdx(parseFloat(e.target.value))}
               />
+              <div className="flex gap-1 items-center">
+                <span>x</span>
+                <input
+                  type="number"
+                  className={`${themes[selectedTheme].bg.secondary}`}
+                  min={0}
+                  max={50}
+                  value={modIdx}
+                  onChange={(e) => setModIdx(parseFloat(e.target.value))}
+                />
+                <span className="invisible">rad</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <label className="w-1/3">Modulator Depth</label>
-            <input
-              className="w-1/3"
-              type="range"
-              min={0}
-              max={1000}
-              step={0.0001}
-              value={modDepth}
-              onChange={(e) => setModDepth(parseFloat(e.target.value))}
-            />
-            <div className="w-1/3 flex gap-1 items-center pl-5">
-              <span className="invisible">x</span>
+          <div
+            className={`flex ${
+              isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+            }`}
+          >
+            <label>Modulator Depth</label>
+            <div className="flex-grow flex gap-2">
               <input
-                type="number"
+                className="flex-grow"
+                type="range"
                 min={0}
                 max={1000}
+                step={0.0001}
                 value={modDepth}
                 onChange={(e) => setModDepth(parseFloat(e.target.value))}
               />
-              <span>Hz</span>
+              <div className="flex gap-1 items-center mr-2">
+                <span className="invisible">x</span>
+                <input
+                  type="number"
+                  className={`${themes[selectedTheme].bg.secondary}`}
+                  min={0}
+                  max={1000}
+                  value={modDepth}
+                  onChange={(e) => setModDepth(parseFloat(e.target.value))}
+                />
+                <span>Hz</span>
+              </div>
             </div>
           </div>
         </>
       )}
-      <div className="my-4">
+      <div className="my-4 flex justify-center">
         <WaveLegend
           real={modComps.real}
           imag={modComps.imag}
           // className="w-full h-[4rem] bg-black text-[#00ff00]"
-          className={`w-[32rem] h-[8rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
+          className={`${isPhoneScreens ? "w-[22rem]" : "w-[32rem] h-[12rem]"} ${
+            themes[selectedTheme].bg.secondary
+          } rounded-lg outline outline-2 outline-black`}
         />
       </div>
     </div>
@@ -284,33 +346,42 @@ function CarrierControls({ selectedTheme }: Props) {
     useSynthStore((state) => state.setCarWaveN),
   ];
   const carComps = useSynthStore((state) => state.carComps);
+  const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
   return (
     <div className={`rounded-[2rem] py-4 px-6 bg-white flex flex-col gap-2`}>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Carrier Level</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={0}
-          max={1}
-          step={0.0001}
-          value={volume}
-          onChange={(e) => setVolume(parseFloat(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span className="invisible">x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Carrier Level</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={0}
             max={1}
+            step={0.0001}
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
           />
+          <div className="flex gap-1 items-center">
+            <span className="invisible">x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={0}
+              max={1}
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+            />
+            <span className="invisible">rad</span>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Carrier Waveform</label>
+      <div className="flex items-center gap-3 justify-between">
+        <label>Carrier Waveform</label>
         {/* <select
           value={carWaveform}
           onChange={(e) => setCarWaveform(e.target.value as any)}
@@ -321,70 +392,90 @@ function CarrierControls({ selectedTheme }: Props) {
             </option>
           ))}
         </select> */}
-        <Select
-          options={waveforms.map(({ waveform, name }) => ({
-            value: waveform,
-            label: name,
-          }))}
-          selectedOption={carWaveform}
-          onChange={(value) => {
-            setCarWaveform(value as Waveform);
-          }}
-           bgColor="bg-[rgb(255,238,240)]"
-          // bgColor="bg-white"
-        />
+        <div className="flex gap-1 items-center">
+          <Select
+            options={waveforms.map(({ waveform, name }) => ({
+              value: waveform,
+              label: name,
+            }))}
+            selectedOption={carWaveform}
+            onChange={(value) => {
+              setCarWaveform(value as Waveform);
+            }}
+            bgColor="bg-[rgb(255,238,240)]"
+            // bgColor="bg-white"
+          />
+          <span className="invisible">rad</span>
+        </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Carrier Wave Phase</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={0}
-          max={6.28}
-          step={0.0001}
-          value={carWavePhase}
-          onChange={(e) => setCarWavePhase(parseFloat(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span className="invisible">x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Carrier Wave Phase</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={0}
             max={6.28}
+            step={0.0001}
             value={carWavePhase}
             onChange={(e) => setCarWavePhase(parseFloat(e.target.value))}
           />
-          <span>rad</span>
+          <div className="flex gap-1 items-center">
+            <span className="invisible">x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={0}
+              max={6.28}
+              value={carWavePhase}
+              onChange={(e) => setCarWavePhase(parseFloat(e.target.value))}
+            />
+            <span>rad</span>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <label className="w-1/3">Carrier Partial Count</label>
-        <input
-          className="w-1/3"
-          type="range"
-          min={1}
-          max={512}
-          step={1}
-          value={carWaveN}
-          onChange={(e) => setCarWaveN(parseInt(e.target.value))}
-        />
-        <div className="w-1/3 flex gap-1 items-center pl-5">
-          <span className="invisible">x</span>
+      <div
+        className={`flex ${
+          isPhoneScreens ? "flex-col gap-1" : "gap-3 items-center"
+        }`}
+      >
+        <label>Carrier Partial Count</label>
+        <div className="flex-grow flex gap-2">
           <input
-            type="number"
+            className="flex-grow"
+            type="range"
             min={1}
             max={512}
+            step={1}
             value={carWaveN}
             onChange={(e) => setCarWaveN(parseInt(e.target.value))}
           />
+          <div className="flex gap-1 items-center">
+            <span className="invisible">x</span>
+            <input
+              type="number"
+              className={`${themes[selectedTheme].bg.secondary}`}
+              min={1}
+              max={512}
+              value={carWaveN}
+              onChange={(e) => setCarWaveN(parseInt(e.target.value))}
+            />
+            <span className="invisible">rad</span>
+          </div>
         </div>
       </div>
-      <div className="my-4">
+      <div className="my-4 flex justify-center">
         <WaveLegend
           real={carComps.real}
           imag={carComps.imag}
           // className="w-full h-[4rem] bg-black text-[#00ff00]"
-          className={`w-[32rem] h-[8rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
+          className={`${isPhoneScreens ? "w-[22rem]" : "w-[32rem] h-[12rem]"} ${
+            themes[selectedTheme].bg.secondary
+          } rounded-lg outline outline-2 outline-black`}
         />
       </div>
     </div>
@@ -475,19 +566,31 @@ function Controls({ selectedTheme }: Props) {
     useSynthStore((state) => state.mode),
     useSynthStore((state) => state.setMode),
   ];
+  const isPhoneScreens = useMediaQuery("(max-width: 680px)");
+  const getHeight = () => {
+    let height = "h-[46rem]";
+    if (isTabletScreens) height = "h-[82rem]";
+    if (isPhoneScreens) height = "h-[89rem]";
+
+    return height;
+  };
 
   return (
-    <div className="p-8 border-2 border-red-500 flex flex-col gap-4">
-      {/* PRESETS, MASTER VOLUME, & MODE */}
+    <div
+      className={`p-8 flex flex-col gap-4 overflow-hidden ${getHeight()} ${
+        isTabletScreens ? `pt-16` : ``
+      }`}
+    >
+      {/* PRESETS, MASTER VOLUME, MODE, & KILL SYNTH */}
       <div
         className={`flex justify-between ${
-          isMobile || isTabletScreens ? "flex-col" : ""
+          isMobile || isTabletScreens ? "flex-col gap-2" : ""
         }`}
       >
         <PresetsManager />
         <div className="flex items-center gap-3">
           <label>Master Volume</label>
-          <input
+          {/* <input
             type="range"
             min={0}
             max={1}
@@ -497,12 +600,12 @@ function Controls({ selectedTheme }: Props) {
           />
           <input
             type="number"
+            className={`bg-white`}
             min={0}
             max={1}
             value={masterVolume}
             onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-            className="!bg-white"
-          />
+          /> */}
         </div>
         <div className="flex items-center gap-3">
           <label>Mode</label>
@@ -526,6 +629,14 @@ function Controls({ selectedTheme }: Props) {
             bgColor="bg-white"
           />
         </div>
+        <div className="flex justify-between items-center">
+          <div
+            onClick={initSynth}
+            className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
+          >
+            Kill Synth
+          </div>
+        </div>
       </div>
 
       {/* MODULATOR & CARRIER */}
@@ -536,16 +647,6 @@ function Controls({ selectedTheme }: Props) {
       >
         <ModulatorControls selectedTheme={selectedTheme} />
         <CarrierControls selectedTheme={selectedTheme} />
-      </div>
-
-      {/* MAX VOICES & OCTAVE */}
-      <div className="flex justify-between items-center">
-        <div
-          onClick={initSynth}
-          className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 mt-2 order-2 ${themes[selectedTheme].bg.primary}`}
-        >
-          Kill Synth
-        </div>
       </div>
     </div>
   );
@@ -571,77 +672,128 @@ function PianoSection({ selectedTheme }: Props) {
     (note) => noteOff(note)
   );
 
-  return <>
-    <div data-expanded={isExpanded} className="transition-all ease-in-out duration-300 bg-white absolute bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-full">
-      <button
-        className="bg-gray-300 w-full flex justify-center"
-        onClick={() => setIsExpanded(!isExpanded)}
+  return (
+    <>
+      <div
+        data-expanded={isExpanded}
+        className="transition-all ease-in-out duration-300 bg-white absolute bottom-0 left-0 right-0 flex flex-col w-full justify-center items-center data-[expanded=false]:h-[10rem] data-[expanded=true]:h-[80vh]"
       >
-        {isExpanded && <MdKeyboardDoubleArrowDown size='2rem' /> || <MdKeyboardDoubleArrowUp size='2rem' />}
-      </button>
-      <div className="flex w-full h-full">
-        <div className="flex flex-col w-[4rem] h-full">
-          <button
-            className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
-            onClick={() => setOctave(Math.min(10, octave + 1))}
-          >
-            <MdKeyboardDoubleArrowUp size='4rem' />
-          </button>
-          <button
-            className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
-            onClick={() => setOctave(Math.max(0, octave - 1))}
-          >
-            <MdKeyboardDoubleArrowDown size='4rem' />
-          </button>
+        <button
+          className={`${themes[selectedTheme].bg.primary} w-full flex justify-center`}
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          {(isExpanded && <MdKeyboardDoubleArrowDown size="2rem" />) || (
+            <MdKeyboardDoubleArrowUp size="2rem" />
+          )}
+        </button>
+        <div className="flex w-full h-full">
+          <div className="flex flex-col w-[4rem] h-full">
+            <button
+              className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+              onClick={() => setOctave(Math.min(10, octave + 1))}
+            >
+              <MdKeyboardDoubleArrowUp size="4rem" />
+            </button>
+            <button
+              className={`outline outline-2 flex-grow flex items-center justify-center ${themes[selectedTheme].pressed.primary} cursor-pointer`}
+              onClick={() => setOctave(Math.max(0, octave - 1))}
+            >
+              <MdKeyboardDoubleArrowDown size="4rem" />
+            </button>
+          </div>
+          <Piano
+            octave={octave}
+            blackKeyRatio={0.6}
+            className="w-full h-full"
+            whiteKeyClassName={`bg-white outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
+            blackKeyClassName={`bg-black outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
+            onNoteDown={(note) => noteOn(note)}
+            onNoteUp={(note) => noteOff(note)}
+            pressedNotes={pressedNotes}
+          />
         </div>
-        <Piano
-          octave={octave}
-          blackKeyRatio={0.6}
-          className="w-full h-full"
-          whiteKeyClassName={`bg-white outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
-          blackKeyClassName={`bg-black outline outline-2 ${themes[selectedTheme].keyPressed.primary} cursor-pointer`}
-          onNoteDown={(note) => noteOn(note)}
-          onNoteUp={(note) => noteOff(note)}
-          pressedNotes={pressedNotes}
-        />
       </div>
-    </div>
-    {/* div to fill up relative space */}
-    <div className="h-[10rem] w-full"><div className="h-[10rem] w-full"></div></div>
-  </>;
+      {/* div to fill up relative space */}
+      <div className="h-[10rem] w-full">
+        <div className="h-[10rem] w-full"></div>
+      </div>
+    </>
+  );
 }
 
 function Header() {
   const lastNoteHz = useSynthStore((state) => state.lastNoteHz);
   const analyzer = useSynthStore((state) => state.analyzer);
   const [selectedTheme] = useState<ThemeKeys>("pink");
+  const isTabletScreens = useMediaQuery("(max-width: 1248px)");
+  const [showOscAndSpec, setShowOscAndSpec] = useState(false);
+  const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
-  return <nav
-    className={`border-2 border-blue-500 flex items-center justify-center ${themes[selectedTheme].bg.primary}`}
-  >
-    <div className="border-2 border-red-500 flex items-center gap-2">
-      <PiWaveSineBold size={40} className="-ml-[7.5px]" />
-      <h1 className="text-[2rem] font-[500]">FM-AM Synth</h1>
-    </div>
-    <div className="grow" />
-    <div className="flex justify-between">
-      <div className="flex flex-col gap-2 items-center">
-        <Oscilloscope
-          analyzer={analyzer}
-          alignHz={lastNoteHz}
-          // className="w-[32rem]  bg-black text-[#00ff00]"
-          className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
-        />
+  return (
+    <nav>
+      <div
+        className={`flex items-center justify-between p-4 relative z-20 ${themes[selectedTheme].bg.primary}`}
+      >
+        <div className="flex items-center gap-2 z-50">
+          <PiWaveSineBold size={40} className="-ml-[7.5px]" />
+          <h1 className="text-[1.5rem] font-[500]">FM-AM Synth</h1>
+        </div>
+
+        {!isTabletScreens && (
+          <div className="flex gap-4">
+            <Oscilloscope
+              analyzer={analyzer}
+              alignHz={lastNoteHz}
+              className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.secondary} rounded-lg outline outline-2 outline-black`}
+            />
+            <Spectrum
+              analyzer={analyzer}
+              className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.secondary} rounded-lg outline outline-2 outline-black`}
+            />
+          </div>
+        )}
+        {isTabletScreens && (
+          <div
+            onClick={() => setShowOscAndSpec(!showOscAndSpec)}
+            className={`flex flex-col gap-2 pt-6 items-center cursor-pointer absolute left-0 right-0 transition-all duration-300 ${
+              showOscAndSpec ? "top-16" : "-top-44"
+            } ${themes[selectedTheme].bg.primary}`}
+          >
+            {/* {showOscAndSpec && ( */}
+            <div
+              className={`flex flex-col gap-4 ${
+                showOscAndSpec ? "" : "invisible"
+              }`}
+            >
+              <Oscilloscope
+                analyzer={analyzer}
+                alignHz={lastNoteHz}
+                className={`${
+                  isPhoneScreens ? "w-[22rem]" : "w-[32rem]"
+                } h-[6rem] ${
+                  themes[selectedTheme].bg.secondary
+                } rounded-lg outline outline-2 outline-black`}
+              />
+              <Spectrum
+                analyzer={analyzer}
+                className={`${
+                  isPhoneScreens ? "w-[22rem]" : "w-[32rem]"
+                } h-[6rem] ${
+                  themes[selectedTheme].bg.secondary
+                } rounded-lg outline outline-2 outline-black`}
+              />
+            </div>
+            {/* )} */}
+            {showOscAndSpec ? (
+              <MdKeyboardDoubleArrowUp size="2rem" />
+            ) : (
+              <MdKeyboardDoubleArrowDown size="2rem" />
+            )}
+          </div>
+        )}
       </div>
-      <div className="flex flex-col gap-2 items-center">
-        <Spectrum
-          analyzer={analyzer}
-          // className="w-[32rem]  bg-black text-[#00ff00]"
-          className={`w-[32rem] h-[6rem] ${themes[selectedTheme].bg.primary} rounded-lg outline outline-2 outline-black`}
-        />
-      </div>
-    </div>
-  </nav>
+    </nav>
+  );
 }
 
 function App() {
@@ -650,6 +802,7 @@ function App() {
   const isMobile = useIsMobile();
 
   const [selectedTheme] = useState<ThemeKeys>("pink");
+  const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
   return (
     <>
@@ -669,7 +822,11 @@ function App() {
           onClick={initSynth}
         >
           <div
-            className={`border-8 border-black px-16 py-8 rounded-[4rem] ${themes[selectedTheme].bg.primary}`}
+            className={`border-8 border-black rounded-[4rem] ${
+              isPhoneScreens
+                ? "px-8 py-5 text-[2.5rem]"
+                : "px-16 py-8 text-[4rem]"
+            } text-center ${themes[selectedTheme].bg.primary}`}
           >
             {(isMobile && "Touch") || "Click"} to Start
           </div>
