@@ -19,6 +19,7 @@ import {
 } from "react-icons/md";
 import { PiWaveSineBold } from "react-icons/pi";
 import { FaMoon, FaSun } from "react-icons/fa6";
+import { LuClipboardCopy, LuClipboardPaste, LuDices } from "react-icons/lu";
 
 type Props = {
   selectedTheme: ThemeKeys;
@@ -634,6 +635,8 @@ function Controls({ selectedTheme, setSelectedTheme }: Props) {
 
   const initSynth = useSynthStore((state) => state.init);
   const randomizeSynth = useSynthStore((state) => state.randomize);
+  const copy = useSynthStore((state) => state.copyToClipboard);
+  const paste = useSynthStore((state) => state.pasteFromClipboard);
   const [masterVolume, setMasterVolume] = [
     useSynthStore((state) => state.masterVolume),
     useSynthStore((state) => state.setMasterVolume),
@@ -726,7 +729,19 @@ function Controls({ selectedTheme, setSelectedTheme }: Props) {
             onClick={randomizeSynth}
             className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
           >
-            Randomize
+            <LuDices />
+          </div>
+          <button
+            onClick={copy}
+            className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
+          >
+            <LuClipboardCopy />
+          </button>
+          <div
+            onClick={paste}
+            className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
+          >
+            <LuClipboardPaste />
           </div>
         </div>
       </div>

@@ -82,6 +82,8 @@ interface SynthState {
   updateCarPeriodicWave: (ctx?: AudioContext) => void;
   init: () => void;
   randomize: () => void;
+  copyToClipboard: () => void;
+  pasteFromClipboard: () => void;
   noteOn: (note: number) => void;
   noteOff: (note: number) => void;
   killAllVoices: () => void;
@@ -332,6 +334,45 @@ const useSynthStore = create<SynthState>((set, get) => ({
     );
     get().setCarWavePhase(Math.random() * Math.PI * 2);
     get().setCarWaveN(Math.floor(Math.random() * 512));
+  },
+  copyToClipboard: async () => {
+    const content = {
+      v: get().volume,
+      m: get().mode,
+      ml: get().modLevel,
+      mr: get().modRatio,
+      mo: get().modOffset,
+      mi: get().modIdx,
+      md: get().modDepth,
+      mf: get().modWaveform,
+      mp: get().modWavePhase,
+      mn: get().modWaveN,
+      cf: get().carWaveform,
+      cp: get().carWavePhase,
+      cn: get().carWaveN,
+    };
+    navigator.clipboard.writeText(JSON.stringify(content));
+  },
+  pasteFromClipboard: async () => {
+    const text = await navigator.clipboard.readText();
+    try {
+      const content = JSON.parse(text);
+      get().setVolume(content.v);
+      get().setMode(content.m);
+      get().setModLevel(content.ml);
+      get().setModRatio(content.mr);
+      get().setModOffset(content.mo);
+      get().setModIdx(content.mi);
+      get().setModDepth(content.md);
+      get().setModWaveform(content.mf);
+      get().setModWavePhase(content.mp);
+      get().setModWaveN(content.mn);
+      get().setCarWaveform(content.cf);
+      get().setCarWavePhase(content.cp);
+      get().setCarWaveN(content.cn);
+    } catch (error) {
+      console.error("Failed to parse clipboard content:", error);
+    }
   },
   noteOn: (note: number) => {
     const mode = get().mode;
