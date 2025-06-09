@@ -1,89 +1,90 @@
-import { create } from 'zustand'
-import { midiToHz, Waveform } from '../utils'
-import { createPeriodicWave } from '../utils'
+import { create } from "zustand";
+import { midiToHz, Waveform } from "../utils";
+import { createPeriodicWave } from "../utils";
 
-export type SynthMode = 'FM' | 'AM'
+export type SynthMode = "FM" | "AM";
 
 type Voice = {
-  note: number,
-  noteFreq: ConstantSourceNode,
-  noteRatio: GainNode,
-  modFreq: GainNode,
-  modIdx: GainNode,
-  modOsc: OscillatorNode,
-  modDepth: GainNode,
-  modEnv: GainNode,
-  modLevel: GainNode,
-  modOut: GainNode,
-  carOsc: OscillatorNode,
-  carDepth: GainNode,
-  carEnv: GainNode,
-  kill: () => void,
-}
+  note: number;
+  noteFreq: ConstantSourceNode;
+  noteRatio: GainNode;
+  modFreq: GainNode;
+  modIdx: GainNode;
+  modOsc: OscillatorNode;
+  modDepth: GainNode;
+  modEnv: GainNode;
+  modLevel: GainNode;
+  modOut: GainNode;
+  carOsc: OscillatorNode;
+  carDepth: GainNode;
+  carEnv: GainNode;
+  kill: () => void;
+};
 
 interface SynthState {
-  audioCtx: AudioContext,
-  voices: Voice[],
-  lastNoteHz: number,
-  started: boolean,
-  noteVoiceMap: Record<number, Set<Voice>>,
-  pressedNotes: Set<number>,
-  modRatioConstSource: ConstantSourceNode,
-  modOffsetConstSource: ConstantSourceNode,
-  modIdxConstSource: ConstantSourceNode,
-  modDepthConstSource: ConstantSourceNode,
-  modLevelConstSource: ConstantSourceNode,
-  DCOffsetConstSource: ConstantSourceNode,
-  modLevelInvConstSource: ConstantSourceNode,
-  analyzer: AnalyserNode,
-  gain: GainNode,
-  masterGain: GainNode,
-  mode: SynthMode,
-  maxVoices: number,
-  masterVolume: number,
-  volume: number,
-  modLevel: number,
-  modRatio: number,
-  modOffset: number,
-  modIdx: number,
-  modDepth: number,
-  modWaveform: Waveform,
-  modWavePhase: number,
-  modWaveN: number,
-  modPeriodicWave: PeriodicWave,
+  audioCtx: AudioContext;
+  voices: Voice[];
+  lastNoteHz: number;
+  started: boolean;
+  noteVoiceMap: Record<number, Set<Voice>>;
+  pressedNotes: Set<number>;
+  modRatioConstSource: ConstantSourceNode;
+  modOffsetConstSource: ConstantSourceNode;
+  modIdxConstSource: ConstantSourceNode;
+  modDepthConstSource: ConstantSourceNode;
+  modLevelConstSource: ConstantSourceNode;
+  DCOffsetConstSource: ConstantSourceNode;
+  modLevelInvConstSource: ConstantSourceNode;
+  analyzer: AnalyserNode;
+  gain: GainNode;
+  masterGain: GainNode;
+  mode: SynthMode;
+  maxVoices: number;
+  masterVolume: number;
+  volume: number;
+  modLevel: number;
+  modRatio: number;
+  modOffset: number;
+  modIdx: number;
+  modDepth: number;
+  modWaveform: Waveform;
+  modWavePhase: number;
+  modWaveN: number;
+  modPeriodicWave: PeriodicWave;
   modComps: {
-    real: Float32Array,
-    imag: Float32Array,
-  }
-  carWaveform: Waveform,
-  carWavePhase: number,
-  carWaveN: number,
-  carPeriodicWave: PeriodicWave,
+    real: Float32Array;
+    imag: Float32Array;
+  };
+  carWaveform: Waveform;
+  carWavePhase: number;
+  carWaveN: number;
+  carPeriodicWave: PeriodicWave;
   carComps: {
-    real: Float32Array,
-    imag: Float32Array,
-  }
-  setMode: (mode: SynthMode) => void,
-  setMaxVoices: (maxVoices: number) => void,
-  setMasterVolume: (masterVolume: number) => void,
-  setVolume: (volume: number) => void,
-  setModLevel: (modLevel: number) => void,
-  setModRatio: (modRatio: number) => void,
-  setModOffset: (modOffset: number) => void,
-  setModIdx: (modIdx: number) => void,
-  setModDepth: (modDepth: number) => void,
-  setModWaveform: (modWaveType: Waveform) => void,
-  setModWavePhase: (modWavePhase: number) => void,
-  setModWaveN: (modWaveN: number) => void,
-  updateModPeriodicWave: (ctx?: AudioContext) => void,
-  setCarWaveform: (carWaveType: Waveform) => void,
-  setCarWavePhase: (carWavePhase: number) => void,
-  setCarWaveN: (carWaveN: number) => void,
-  updateCarPeriodicWave: (ctx?: AudioContext) => void
-  init: () => void,
-  noteOn: (note: number) => void,
-  noteOff: (note: number) => void,
-  killAllVoices: () => void,
+    real: Float32Array;
+    imag: Float32Array;
+  };
+  setMode: (mode: SynthMode) => void;
+  setMaxVoices: (maxVoices: number) => void;
+  setMasterVolume: (masterVolume: number) => void;
+  setVolume: (volume: number) => void;
+  setModLevel: (modLevel: number) => void;
+  setModRatio: (modRatio: number) => void;
+  setModOffset: (modOffset: number) => void;
+  setModIdx: (modIdx: number) => void;
+  setModDepth: (modDepth: number) => void;
+  setModWaveform: (modWaveType: Waveform) => void;
+  setModWavePhase: (modWavePhase: number) => void;
+  setModWaveN: (modWaveN: number) => void;
+  updateModPeriodicWave: (ctx?: AudioContext) => void;
+  setCarWaveform: (carWaveType: Waveform) => void;
+  setCarWavePhase: (carWavePhase: number) => void;
+  setCarWaveN: (carWaveN: number) => void;
+  updateCarPeriodicWave: (ctx?: AudioContext) => void;
+  init: () => void;
+  randomize: () => void;
+  noteOn: (note: number) => void;
+  noteOff: (note: number) => void;
+  killAllVoices: () => void;
 }
 
 function createVoice(
@@ -101,52 +102,52 @@ function createVoice(
   modLevelInv: ConstantSourceNode,
   dest?: AudioNode
 ): Voice {
-  const noteFreq = new ConstantSourceNode(audioCtx, { offset: midiToHz(note) })
-  const noteRatio = new GainNode(audioCtx, { gain: 0 })
-  const modFreq = audioCtx.createGain()
-  const modIdx = new GainNode(audioCtx, { gain: 0 })
-  const modOsc = new OscillatorNode(audioCtx, { frequency: 0 })
-  const modDepth = new GainNode(audioCtx, { gain: mode === 'FM' ? 0 : 1 })
-  const modEnv = audioCtx.createGain()
-  const modLevel = new GainNode(audioCtx, { gain: 0 })
-  const modOut = audioCtx.createGain()
-  const carOsc = audioCtx.createOscillator()
-  const carDepth = audioCtx.createGain()
-  const carEnv = audioCtx.createGain()
+  const noteFreq = new ConstantSourceNode(audioCtx, { offset: midiToHz(note) });
+  const noteRatio = new GainNode(audioCtx, { gain: 0 });
+  const modFreq = audioCtx.createGain();
+  const modIdx = new GainNode(audioCtx, { gain: 0 });
+  const modOsc = new OscillatorNode(audioCtx, { frequency: 0 });
+  const modDepth = new GainNode(audioCtx, { gain: mode === "FM" ? 0 : 1 });
+  const modEnv = audioCtx.createGain();
+  const modLevel = new GainNode(audioCtx, { gain: 0 });
+  const modOut = audioCtx.createGain();
+  const carOsc = audioCtx.createOscillator();
+  const carDepth = audioCtx.createGain();
+  const carEnv = audioCtx.createGain();
 
-  noteFreq.connect(noteRatio)
-  modRatioCS.connect(noteRatio.gain)
-  noteRatio.connect(modFreq)
-  modOffsetCS.connect(modFreq)
-  modFreq.connect(modOsc.frequency)
+  noteFreq.connect(noteRatio);
+  modRatioCS.connect(noteRatio.gain);
+  noteRatio.connect(modFreq);
+  modOffsetCS.connect(modFreq);
+  modFreq.connect(modOsc.frequency);
 
-  modOsc.setPeriodicWave(modPeriodicWave)
-  modOsc.connect(modDepth)
-  modDepth.connect(modEnv)
-  modEnv.connect(modLevel)
-  modLevelCS.connect(modLevel.gain)
-  modLevel.connect(modOut)
+  modOsc.setPeriodicWave(modPeriodicWave);
+  modOsc.connect(modDepth);
+  modDepth.connect(modEnv);
+  modEnv.connect(modLevel);
+  modLevelCS.connect(modLevel.gain);
+  modLevel.connect(modOut);
 
-  if (mode === 'FM') {
-    modFreq.connect(modIdx)
-    modIdxCS.connect(modIdx.gain)
-    modIdx.connect(modDepth.gain)
-    modOut.connect(carOsc.frequency)
-    modDepthCS.connect(modDepth.gain)
+  if (mode === "FM") {
+    modFreq.connect(modIdx);
+    modIdxCS.connect(modIdx.gain);
+    modIdx.connect(modDepth.gain);
+    modOut.connect(carOsc.frequency);
+    modDepthCS.connect(modDepth.gain);
   } else {
-    modOut.connect(carDepth.gain)
-    DCOffsetCS.connect(modOut)
-    modLevelInv.connect(carDepth.gain)
+    modOut.connect(carDepth.gain);
+    DCOffsetCS.connect(modOut);
+    modLevelInv.connect(carDepth.gain);
   }
 
-  carOsc.setPeriodicWave(carPeriodicWave)
-  carOsc.connect(carDepth)
-  carDepth.connect(carEnv)
-  carEnv.connect(dest ?? audioCtx.destination)
+  carOsc.setPeriodicWave(carPeriodicWave);
+  carOsc.connect(carDepth);
+  carDepth.connect(carEnv);
+  carEnv.connect(dest ?? audioCtx.destination);
 
-  carOsc.start()
-  modOsc.start()
-  noteFreq.start()
+  carOsc.start();
+  modOsc.start();
+  noteFreq.start();
 
   return {
     note,
@@ -163,22 +164,21 @@ function createVoice(
     carDepth,
     carEnv,
     kill: () => {
-      noteFreq.stop()
-      modOsc.stop()
-      carOsc.stop()
-      modRatioCS.disconnect(noteRatio.gain)
-      modOffsetCS.disconnect(modFreq)
-      modLevelCS.disconnect(modLevel.gain)
-      if (mode === 'FM') {
-        modIdxCS.disconnect(modIdx.gain)
-        modDepthCS.disconnect(modDepth.gain)
+      noteFreq.stop();
+      modOsc.stop();
+      carOsc.stop();
+      modRatioCS.disconnect(noteRatio.gain);
+      modOffsetCS.disconnect(modFreq);
+      modLevelCS.disconnect(modLevel.gain);
+      if (mode === "FM") {
+        modIdxCS.disconnect(modIdx.gain);
+        modDepthCS.disconnect(modDepth.gain);
+      } else if (mode === "AM") {
+        DCOffsetCS.disconnect(modOut);
+        modLevelInv.disconnect(carDepth.gain);
       }
-      else if (mode === 'AM') {
-        DCOffsetCS.disconnect(modOut)
-        modLevelInv.disconnect(carDepth.gain)
-      }
-    }
-  }
+    },
+  };
 }
 
 const useSynthStore = create<SynthState>((set, get) => ({
@@ -198,14 +198,14 @@ const useSynthStore = create<SynthState>((set, get) => ({
   started: false,
   pressedNotes: new Set(),
   noteVoiceMap: {},
-  mode: 'FM',
+  mode: "FM",
   maxVoices: 8,
   modLevel: 1,
   modRatio: 1,
   modOffset: 0,
   modIdx: 13,
   modDepth: 0,
-  modWaveform: 'sin',
+  modWaveform: "sin",
   modWavePhase: 0,
   modWaveN: 512,
   modPeriodicWave: null as unknown as PeriodicWave,
@@ -213,7 +213,7 @@ const useSynthStore = create<SynthState>((set, get) => ({
     real: new Float32Array(512),
     imag: new Float32Array(512),
   },
-  carWaveform: 'sin',
+  carWaveform: "sin",
   carWavePhase: 0,
   carWaveN: 512,
   carPeriodicWave: null as unknown as PeriodicWave,
@@ -224,61 +224,76 @@ const useSynthStore = create<SynthState>((set, get) => ({
   volume: 1,
   masterVolume: 0.2,
   init: async () => {
-    const audioCtx = get().audioCtx ?? new window.AudioContext({sampleRate: 44100})
-    let started = get().started
-    const modRatioConstSource = get().modRatioConstSource ?? new ConstantSourceNode(audioCtx, {
-      offset: get().modRatio,
-    })
-    const modOffsetConstSource = get().modOffsetConstSource ?? new ConstantSourceNode(audioCtx, {
-      offset: get().modOffset,
-    })
-    const modIdxConstSource = get().modIdxConstSource ?? new ConstantSourceNode(audioCtx, {
-      offset: get().modIdx,
-    })
-    const modDepthConstSource = get().modDepthConstSource ?? new ConstantSourceNode(audioCtx, {
-      offset: get().modDepth,
-    })
-    const modLevelConstSource = get().modLevelConstSource ?? new ConstantSourceNode(audioCtx, {
-      offset: get().modLevel,
-    })
-    const DCOffsetConstSource = get().DCOffsetConstSource ?? new ConstantSourceNode(audioCtx, {
-      offset: -1,
-    })
-    const modLevelInvConstSource = get().modLevelInvConstSource ?? new ConstantSourceNode(audioCtx, {
-      offset: 1 - get().modLevel,
-    })
+    const audioCtx =
+      get().audioCtx ?? new window.AudioContext({ sampleRate: 44100 });
+    let started = get().started;
+    const modRatioConstSource =
+      get().modRatioConstSource ??
+      new ConstantSourceNode(audioCtx, {
+        offset: get().modRatio,
+      });
+    const modOffsetConstSource =
+      get().modOffsetConstSource ??
+      new ConstantSourceNode(audioCtx, {
+        offset: get().modOffset,
+      });
+    const modIdxConstSource =
+      get().modIdxConstSource ??
+      new ConstantSourceNode(audioCtx, {
+        offset: get().modIdx,
+      });
+    const modDepthConstSource =
+      get().modDepthConstSource ??
+      new ConstantSourceNode(audioCtx, {
+        offset: get().modDepth,
+      });
+    const modLevelConstSource =
+      get().modLevelConstSource ??
+      new ConstantSourceNode(audioCtx, {
+        offset: get().modLevel,
+      });
+    const DCOffsetConstSource =
+      get().DCOffsetConstSource ??
+      new ConstantSourceNode(audioCtx, {
+        offset: -1,
+      });
+    const modLevelInvConstSource =
+      get().modLevelInvConstSource ??
+      new ConstantSourceNode(audioCtx, {
+        offset: 1 - get().modLevel,
+      });
 
-    const gain = get().gain ?? audioCtx.createGain()
-    const analyzer = get().analyzer ?? audioCtx.createAnalyser()
-    const masterGain = get().masterGain ?? audioCtx.createGain()
+    const gain = get().gain ?? audioCtx.createGain();
+    const analyzer = get().analyzer ?? audioCtx.createAnalyser();
+    const masterGain = get().masterGain ?? audioCtx.createGain();
 
-    if (audioCtx.state === 'suspended') {
-      await audioCtx.resume()
+    if (audioCtx.state === "suspended") {
+      await audioCtx.resume();
     }
 
-    if (!started && audioCtx.state === 'running') {
-      modRatioConstSource.start()
-      modOffsetConstSource.start()
-      modIdxConstSource.start()
-      modDepthConstSource.start()
-      modLevelConstSource.start()
-      DCOffsetConstSource.start()
-      modLevelInvConstSource.start()
+    if (!started && audioCtx.state === "running") {
+      modRatioConstSource.start();
+      modOffsetConstSource.start();
+      modIdxConstSource.start();
+      modDepthConstSource.start();
+      modLevelConstSource.start();
+      DCOffsetConstSource.start();
+      modLevelInvConstSource.start();
 
-      get().updateModPeriodicWave(audioCtx)
-      get().updateCarPeriodicWave(audioCtx)
+      get().updateModPeriodicWave(audioCtx);
+      get().updateCarPeriodicWave(audioCtx);
 
-      gain.connect(analyzer)
-      analyzer.connect(masterGain)
-      masterGain.connect(audioCtx.destination)
+      gain.connect(analyzer);
+      analyzer.connect(masterGain);
+      masterGain.connect(audioCtx.destination);
 
-      gain.gain.setValueAtTime(get().volume, audioCtx.currentTime)
-      masterGain.gain.setValueAtTime(get().masterVolume, audioCtx.currentTime)
+      gain.gain.setValueAtTime(get().volume, audioCtx.currentTime);
+      masterGain.gain.setValueAtTime(get().masterVolume, audioCtx.currentTime);
 
-      started = true
+      started = true;
     }
 
-    get().killAllVoices()
+    get().killAllVoices();
 
     set({
       audioCtx,
@@ -293,12 +308,35 @@ const useSynthStore = create<SynthState>((set, get) => ({
       gain,
       masterGain,
       started,
-    })
+    });
+  },
+  randomize: async () => {
+    get().setMode((["FM", "AM"] as const)[Math.floor(Math.random() * 2)]);
+    get().setModLevel(Math.random() * 1);
+    get().setModWaveform(
+      (["sin", "sqr", "saw", "tri", "rev-saw"] as const)[
+        Math.floor(Math.random() * 5)
+      ]
+    );
+    get().setModWavePhase(Math.random() * Math.PI * 2);
+    get().setModWaveN(Math.floor(Math.random() * 512));
+    get().setModRatio(Math.random() * 64);
+    get().setModOffset(Math.random() * 2000 - 1000);
+    get().setModIdx(Math.floor(Math.random() * 50));
+    get().setModDepth(Math.random() * 1000);
+    get().setVolume(1);
+    get().setCarWaveform(
+      (["sin", "sqr", "saw", "tri", "rev-saw"] as const)[
+        Math.floor(Math.random() * 5)
+      ]
+    );
+    get().setCarWavePhase(Math.random() * Math.PI * 2);
+    get().setCarWaveN(Math.floor(Math.random() * 512));
   },
   noteOn: (note: number) => {
-    const mode = get().mode
-    const now = get().audioCtx.currentTime
-    const noteHz = midiToHz(note)
+    const mode = get().mode;
+    const now = get().audioCtx.currentTime;
+    const noteHz = midiToHz(note);
     const voice = createVoice(
       note,
       mode,
@@ -312,128 +350,159 @@ const useSynthStore = create<SynthState>((set, get) => ({
       get().modLevelConstSource,
       get().DCOffsetConstSource,
       get().modLevelInvConstSource,
-      get().gain,
-    )
-    voice.carOsc.frequency.setValueAtTime(noteHz, now)
+      get().gain
+    );
+    voice.carOsc.frequency.setValueAtTime(noteHz, now);
 
-    voice.modEnv.gain.setValueAtTime(1, now)
-    voice.carEnv.gain.setValueAtTime(1, now)
-    
-    const allVoices = [...get().voices, voice]
-    const maxVoices = get().maxVoices
-    const voices = allVoices.slice(Math.max(0, allVoices.length - maxVoices))
-    const voicesToKill = (allVoices.length > maxVoices) ? allVoices.slice(0, allVoices.length - maxVoices) : []
+    voice.modEnv.gain.setValueAtTime(1, now);
+    voice.carEnv.gain.setValueAtTime(1, now);
 
-    const noteVoiceMap = get().noteVoiceMap
-    const pressedNotes = get().pressedNotes
+    const allVoices = [...get().voices, voice];
+    const maxVoices = get().maxVoices;
+    const voices = allVoices.slice(Math.max(0, allVoices.length - maxVoices));
+    const voicesToKill =
+      allVoices.length > maxVoices
+        ? allVoices.slice(0, allVoices.length - maxVoices)
+        : [];
+
+    const noteVoiceMap = get().noteVoiceMap;
+    const pressedNotes = get().pressedNotes;
 
     voicesToKill.forEach((voice) => {
-      voice.kill()
-      noteVoiceMap[voice.note]?.delete(voice)
+      voice.kill();
+      noteVoiceMap[voice.note]?.delete(voice);
       if (noteVoiceMap[voice.note]?.size === 0 || false) {
-        pressedNotes.delete(voice.note)
+        pressedNotes.delete(voice.note);
       }
-    })
+    });
 
-    noteVoiceMap[note] ??= new Set()
-    noteVoiceMap[note].add(voice)
-    pressedNotes.add(note)
+    noteVoiceMap[note] ??= new Set();
+    noteVoiceMap[note].add(voice);
+    pressedNotes.add(note);
 
-    set({ voices, lastNoteHz: noteHz, pressedNotes: new Set(pressedNotes) })
+    set({ voices, lastNoteHz: noteHz, pressedNotes: new Set(pressedNotes) });
   },
   noteOff: (note: number) => {
-    const now = get().audioCtx.currentTime
-    const noteSet = get().noteVoiceMap[note]
+    const now = get().audioCtx.currentTime;
+    const noteSet = get().noteVoiceMap[note];
 
-    if (!noteSet) return
-    
+    if (!noteSet) return;
+
     noteSet.forEach((voice) => {
-      voice.carEnv.gain.setValueAtTime(0, now)
-    })
+      voice.carEnv.gain.setValueAtTime(0, now);
+    });
 
-    noteSet.clear()
-    const pressedNotes = get().pressedNotes
-    pressedNotes.delete(note)
-    set({ pressedNotes: new Set(pressedNotes) })
+    noteSet.clear();
+    const pressedNotes = get().pressedNotes;
+    pressedNotes.delete(note);
+    set({ pressedNotes: new Set(pressedNotes) });
   },
   setModWaveform: (modWaveType: Waveform) => {
-    set({ modWaveform: modWaveType })
-    get().updateModPeriodicWave()
+    set({ modWaveform: modWaveType });
+    get().updateModPeriodicWave();
   },
   setModWavePhase: (modWavePhase: number) => {
-    set({ modWavePhase })
-    get().updateModPeriodicWave()
+    set({ modWavePhase });
+    get().updateModPeriodicWave();
   },
   setModWaveN: (modWaveN: number) => {
-    set({ modWaveN })
-    get().updateModPeriodicWave()
+    set({ modWaveN });
+    get().updateModPeriodicWave();
   },
   updateModPeriodicWave: (ctx?: AudioContext) => {
-    const { periodicWave, real, imag } = createPeriodicWave(ctx ?? get().audioCtx, get().modWaveform, get().modWavePhase, get().modWaveN)
-    set({ modPeriodicWave: periodicWave, modComps: { real, imag } })
+    const { periodicWave, real, imag } = createPeriodicWave(
+      ctx ?? get().audioCtx,
+      get().modWaveform,
+      get().modWavePhase,
+      get().modWaveN
+    );
+    set({ modPeriodicWave: periodicWave, modComps: { real, imag } });
     get().voices.forEach((voice) => {
-      voice.modOsc.setPeriodicWave(get().modPeriodicWave)
-    })
+      voice.modOsc.setPeriodicWave(get().modPeriodicWave);
+    });
   },
   setCarWaveform: (carWaveType: Waveform) => {
-    set({ carWaveform: carWaveType })
-    get().updateCarPeriodicWave()
+    set({ carWaveform: carWaveType });
+    get().updateCarPeriodicWave();
   },
   setCarWavePhase: (carWavePhase: number) => {
-    set({ carWavePhase })
-    get().updateCarPeriodicWave()
+    set({ carWavePhase });
+    get().updateCarPeriodicWave();
   },
   setCarWaveN: (carWaveN: number) => {
-    set({ carWaveN })
-    get().updateCarPeriodicWave()
+    set({ carWaveN });
+    get().updateCarPeriodicWave();
   },
   updateCarPeriodicWave: (ctx?: AudioContext) => {
-    const { periodicWave, real, imag } = createPeriodicWave(ctx ?? get().audioCtx, get().carWaveform, get().carWavePhase, get().carWaveN)
-    set({ carPeriodicWave: periodicWave, carComps: { real, imag } })
+    const { periodicWave, real, imag } = createPeriodicWave(
+      ctx ?? get().audioCtx,
+      get().carWaveform,
+      get().carWavePhase,
+      get().carWaveN
+    );
+    set({ carPeriodicWave: periodicWave, carComps: { real, imag } });
     get().voices.forEach((voice) => {
-      voice.carOsc.setPeriodicWave(get().carPeriodicWave)
-    })
+      voice.carOsc.setPeriodicWave(get().carPeriodicWave);
+    });
   },
   setMode: (mode: SynthMode) => {
-    set({ mode })
+    set({ mode });
   },
   setModLevel: (modLevel: number) => {
-    set({ modLevel })
-    get().modLevelConstSource.offset.setValueAtTime(modLevel, get().audioCtx.currentTime)
-    get().modLevelInvConstSource.offset.setValueAtTime(1 - modLevel, get().audioCtx.currentTime)
+    set({ modLevel });
+    get().modLevelConstSource.offset.setValueAtTime(
+      modLevel,
+      get().audioCtx.currentTime
+    );
+    get().modLevelInvConstSource.offset.setValueAtTime(
+      1 - modLevel,
+      get().audioCtx.currentTime
+    );
   },
   setModRatio: (modRatio: number) => {
-    set({ modRatio })
-    get().modRatioConstSource.offset.setValueAtTime(modRatio, get().audioCtx.currentTime)
+    set({ modRatio });
+    get().modRatioConstSource.offset.setValueAtTime(
+      modRatio,
+      get().audioCtx.currentTime
+    );
   },
   setModOffset: (modOffset: number) => {
-    set({ modOffset })
-    get().modOffsetConstSource.offset.setValueAtTime(modOffset, get().audioCtx.currentTime)
+    set({ modOffset });
+    get().modOffsetConstSource.offset.setValueAtTime(
+      modOffset,
+      get().audioCtx.currentTime
+    );
   },
   setModIdx: (modIdx: number) => {
-    set({ modIdx })
-    get().modIdxConstSource.offset.setValueAtTime(modIdx, get().audioCtx.currentTime)
+    set({ modIdx });
+    get().modIdxConstSource.offset.setValueAtTime(
+      modIdx,
+      get().audioCtx.currentTime
+    );
   },
   setModDepth: (modDepth: number) => {
-    set({ modDepth })
-    get().modDepthConstSource.offset.setValueAtTime(modDepth, get().audioCtx.currentTime)
+    set({ modDepth });
+    get().modDepthConstSource.offset.setValueAtTime(
+      modDepth,
+      get().audioCtx.currentTime
+    );
   },
   setMasterVolume: (volume: number) => {
-    set({ masterVolume: volume })
-    get().masterGain.gain.setValueAtTime(volume, get().audioCtx.currentTime)
+    set({ masterVolume: volume });
+    get().masterGain.gain.setValueAtTime(volume, get().audioCtx.currentTime);
   },
   setVolume: (volume: number) => {
-    set({ volume })
-    get().gain.gain.setValueAtTime(volume, get().audioCtx.currentTime)
+    set({ volume });
+    get().gain.gain.setValueAtTime(volume, get().audioCtx.currentTime);
   },
   setMaxVoices: (maxVoices: number) => {
-    get().killAllVoices()
-    set({ maxVoices: Math.min(Math.max(1, maxVoices), 8) })
+    get().killAllVoices();
+    set({ maxVoices: Math.min(Math.max(1, maxVoices), 8) });
   },
   killAllVoices: () => {
-    get().voices.forEach((voice) => voice.kill())
-    set({ voices: [], noteVoiceMap: {}, pressedNotes: new Set() })
+    get().voices.forEach((voice) => voice.kill());
+    set({ voices: [], noteVoiceMap: {}, pressedNotes: new Set() });
   },
-}))
+}));
 
-export default useSynthStore
+export default useSynthStore;

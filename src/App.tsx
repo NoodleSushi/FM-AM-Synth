@@ -633,6 +633,7 @@ function Controls({ selectedTheme, setSelectedTheme }: Props) {
   const isTabletScreens = useMediaQuery("(max-width: 1248px)");
 
   const initSynth = useSynthStore((state) => state.init);
+  const randomizeSynth = useSynthStore((state) => state.randomize);
   const [masterVolume, setMasterVolume] = [
     useSynthStore((state) => state.masterVolume),
     useSynthStore((state) => state.setMasterVolume),
@@ -713,12 +714,19 @@ function Controls({ selectedTheme, setSelectedTheme }: Props) {
             bgColor={selectedTheme === "pink" ? "bg-white" : "bg-black"}
           />
         </div>
+
         <div className="flex justify-between items-center">
-          <div
+          <button
             onClick={initSynth}
             className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
           >
             Kill Synth
+          </button>
+          <div
+            onClick={randomizeSynth}
+            className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 ${themes[selectedTheme].bg.primary}`}
+          >
+            Randomize
           </div>
         </div>
       </div>
