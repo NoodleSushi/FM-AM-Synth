@@ -10,7 +10,7 @@ import WaveLegend from "./Components/WaveLegend";
 import Presets from "./presets.json";
 import { Waveform, waveforms } from "./utils";
 import { ThemeKeys, themes } from "./themes";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import useMediaQuery from "./Hooks/useMediaQuery";
 import Select from "./Components/Select";
 import {
@@ -23,7 +23,7 @@ import { LuClipboardCopy, LuClipboardPaste, LuDices } from "react-icons/lu";
 
 type Props = {
   selectedTheme: ThemeKeys;
-  setSelectedTheme?: (value: ThemeKeys) => void;
+  cycleSelectedTheme?: () => void;
 };
 
 type AppState = {
@@ -365,15 +365,13 @@ function ModulatorControls({ selectedTheme }: Props) {
       )}
       <div className="my-4 flex justify-center">
         <WaveLegend
-          lineColor={selectedTheme === "pink" ? "black" : "white"}
+          lineColor={themes[selectedTheme].visualizerColor}
           real={modComps.real}
           imag={modComps.imag}
           // className="w-full h-[4rem] bg-black text-[#00ff00]"
           className={`${isPhoneScreens ? "w-[22rem]" : "w-[32rem] h-[12rem]"} ${
             themes[selectedTheme].bg.secondary
-          } rounded-lg outline outline-2 ${
-            selectedTheme === "pink" ? "outline-black" : "outline-white"
-          }`}
+          } rounded-lg outline outline-2 ${themes[selectedTheme].visualizer}`}
         />
       </div>
     </div>
@@ -544,15 +542,13 @@ function CarrierControls({ selectedTheme }: Props) {
       </div>
       <div className="my-4 flex justify-center">
         <WaveLegend
-          lineColor={selectedTheme === "pink" ? "black" : "white"}
+          lineColor={themes[selectedTheme].visualizerColor}
           real={carComps.real}
           imag={carComps.imag}
           // className="w-full h-[4rem] bg-black text-[#00ff00]"
           className={`${isPhoneScreens ? "w-[22rem]" : "w-[32rem] h-[12rem]"} ${
             themes[selectedTheme].bg.secondary
-          } rounded-lg outline outline-2 ${
-            selectedTheme === "pink" ? "outline-black" : "outline-white"
-          }`}
+          } rounded-lg outline outline-2 ${themes[selectedTheme].visualizer}`}
         />
       </div>
     </div>
@@ -630,7 +626,7 @@ function PresetsManager({ selectedTheme }: Props) {
   );
 }
 
-function Controls({ selectedTheme, setSelectedTheme }: Props) {
+function Controls({ selectedTheme, cycleSelectedTheme }: Props) {
   const isTabletScreens = useMediaQuery("(max-width: 1248px)");
 
   const initSynth = useSynthStore((state) => state.init);
@@ -762,10 +758,7 @@ function Controls({ selectedTheme, setSelectedTheme }: Props) {
             See Poster
           </a>
           <div
-            onClick={() => {
-              if (setSelectedTheme)
-                setSelectedTheme(selectedTheme === "pink" ? "violet" : "pink");
-            }}
+            onClick={() => cycleSelectedTheme?.()}
             className={`rounded-lg cursor-pointer w-max py-3 px-6 hover:opacity-80 flex items-center gap-2 ${themes[selectedTheme].bg.primary}`}
           >
             {selectedTheme === "pink" ? <FaSun /> : <FaMoon />}
@@ -792,17 +785,17 @@ function PianoSection({ selectedTheme }: Props) {
   const noteOn = useSynthStore((state) => state.noteOn);
   const noteOff = useSynthStore((state) => state.noteOff);
   const isLandscapePhone = useMediaQuery(
-    "(max-device-width: 940px) and (orientation: landscape) and (min-aspect-ratio: 3/2)"
+    "(max-device-width: 940px) and (orientation: landscape) and (min-aspect-ratio: 3/2)",
   );
 
   useKeyboardMapping(
     (note) => noteOn(octave * 12 + note),
-    (note) => noteOff(octave * 12 + note)
+    (note) => noteOff(octave * 12 + note),
   );
 
   useMidi(
     (note) => noteOn(note),
-    (note) => noteOff(note)
+    (note) => noteOff(note),
   );
 
   return (
@@ -885,7 +878,7 @@ function Header({ selectedTheme }: Props) {
   const [showOscAndSpec, setShowOscAndSpec] = useState(false);
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
   const isLandscapePhone = useMediaQuery(
-    "(max-device-width: 940px) and (orientation: landscape) and (min-aspect-ratio: 3/2)"
+    "(max-device-width: 940px) and (orientation: landscape) and (min-aspect-ratio: 3/2)",
   );
 
   // useEffect(() => {
@@ -939,7 +932,7 @@ function Header({ selectedTheme }: Props) {
               className={`w-[32rem] h-[6rem] ${
                 themes[selectedTheme].bg.secondary
               } rounded-lg outline outline-2 ${
-                selectedTheme === "pink" ? "outline-black" : "outline-white"
+                themes[selectedTheme].visualizer
               }`}
             />
             <Spectrum
@@ -947,7 +940,7 @@ function Header({ selectedTheme }: Props) {
               className={`w-[32rem] h-[6rem] ${
                 themes[selectedTheme].bg.secondary
               } rounded-lg outline outline-2 ${
-                selectedTheme === "pink" ? "outline-black" : "outline-white"
+                themes[selectedTheme].visualizer
               }`}
             />
           </div>
@@ -970,7 +963,7 @@ function Header({ selectedTheme }: Props) {
                 className={`${getOscAndSpecWidth()} h-[6rem] ${
                   themes[selectedTheme].bg.secondary
                 } rounded-lg outline outline-2 ${
-                  selectedTheme === "pink" ? "outline-black" : "outline-white"
+                  themes[selectedTheme].visualizer
                 }`}
               />
               <Spectrum
@@ -978,7 +971,7 @@ function Header({ selectedTheme }: Props) {
                 className={`${getOscAndSpecWidth()} h-[6rem] ${
                   themes[selectedTheme].bg.secondary
                 } rounded-lg outline outline-2 ${
-                  selectedTheme === "pink" ? "outline-black" : "outline-white"
+                  themes[selectedTheme].visualizer
                 }`}
               />
             </div>
@@ -999,7 +992,11 @@ function App() {
   const audioCtxState = useSynthStore((state) => state.audioCtx?.state || "");
   const isMobile = useIsMobile();
 
-  const [selectedTheme, setSelectedTheme] = useState<ThemeKeys>("pink");
+  const [selectedThemeIdx, setSelectedThemeIdx] = useState(0);
+  const selectedTheme = useMemo(
+    () => Object.keys(themes)[selectedThemeIdx] as ThemeKeys,
+    [selectedThemeIdx],
+  );
   const isPhoneScreens = useMediaQuery("(max-width: 680px)");
 
   const scrollbarStyles = `
@@ -1009,37 +1006,29 @@ function App() {
     }
 
     ::-webkit-scrollbar-track {
-      background: ${selectedTheme === "pink" ? "white" : "white"};
+      background: ${themes[selectedTheme].scrollbarTrack.bg};
     }
 
     ::-webkit-scrollbar-thumb {
       border-radius: 100px;
-      background: ${
-        selectedTheme === "pink" ? "rgb(255,173,187)" : "rgb(16,0,43)"
-      };
+      background: ${themes[selectedTheme].scrollbarThumb.bg};
     }
 
     ::-webkit-scrollbar-thumb:hover {
       cursor: pointer;
-      background: ${
-        selectedTheme === "pink" ? "rgb(255, 111, 135)" : "rgb(37, 0, 100)"
-      };
+      background: ${themes[selectedTheme].scrollbarThumb.bgHover};
     }
   `;
 
   const inputRangeStyles = `
     input[type="range"] {
-      accent-color: ${
-        selectedTheme === "pink" ? "rgb(255,173,187)" : "rgb(60,9,108)"
-      };
+      accent-color: ${themes[selectedTheme].rangeAccent};
       cursor: pointer;
     }
   `;
 
   return (
-    <div
-      className={`${selectedTheme === "pink" ? "text-black" : "text-white"}`}
-    >
+    <div className={`${themes[selectedTheme].text}`}>
       <style>{scrollbarStyles}</style>
       <style>{inputRangeStyles}</style>
       <div className="fixed flex flex-col w-full h-full font-poppins">
@@ -1049,7 +1038,9 @@ function App() {
         >
           <Controls
             selectedTheme={selectedTheme}
-            setSelectedTheme={setSelectedTheme}
+            cycleSelectedTheme={() =>
+              setSelectedThemeIdx((x) => (x + 1) % Object.keys(themes).length)
+            }
           />
         </div>
         <PianoSection selectedTheme={selectedTheme} />

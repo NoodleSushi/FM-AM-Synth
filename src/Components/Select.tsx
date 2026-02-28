@@ -48,11 +48,7 @@ const Select = ({
         onClick={() => setShowDropdown(!showDropdown)}
         className={`px-2 py-1 w-[10rem] rounded-lg cursor-pointer flex items-center justify-between ${
           showDropdown
-            ? `outline outline-2 outline-offset-2 ${
-                selectedTheme === "pink"
-                  ? themes.pink.outline.primary
-                  : themes.violet.outline.secondary
-              }`
+            ? `outline outline-2 outline-offset-2 ${themes[selectedTheme].outline.primary}`
             : ""
         } ${bgColor}`}
       >
